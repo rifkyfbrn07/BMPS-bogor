@@ -1,0 +1,340 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  email     String     @unique
+  password  String
+  role      Role       @default(SCHOOL)
+  accountStatus AccountStatus @default(PENDING)
+  reviewedAt DateTime?
+  rejectionReason String?
+  schoolId  String?    @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  auditLogs AuditLog[]
+  school    School?    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+}
+
+model Foundation {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  email       String?
+  phone       String?
+  address     String?
+  description String?
+  logoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  schools     School[]
+}
+
+model School {
+  id              String                @id @default(uuid())
+  name            String
+  npsn            String                @unique
+  slug            String                @unique
+  level           SchoolLevel
+  foundationId    String?
+  principalName   String?
+  picName         String?
+  picRole         String?
+  email           String?
+  phone           String?
+  address         String?
+  district        String
+  ward            String?
+  city            String                @default("Bogor")
+  province        String                @default("Jawa Barat")
+  website         String?
+  description     String?
+  logoUrl         String?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  aidApplications AidApplication[]
+  foundation      Foundation?           @relation(fields: [foundationId], references: [id])
+  updateRequests  SchoolUpdateRequest[]
+  user            User?
+}
+
+model SchoolRegistration {
+  id                 String             @id @default(uuid())
+  registrationNumber String             @unique
+  name               String
+  npsn               String             @unique
+  level              SchoolLevel
+  foundationName     String?
+  principalName      String
+  picName            String
+  picRole            String
+  email              String
+  phone              String
+  address            String
+  district           String
+  ward               String
+  city               String             @default("Bogor")
+  province           String             @default("Jawa Barat")
+  website            String?
+  description        String?
+  logoUrl            String?
+  documentUrl        String?
+  status             RegistrationStatus @default(PENDING)
+  rejectionReason    String?
+  reviewerId         String?
+  reviewedAt         DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+model SchoolUpdateRequest {
+  id              String             @id @default(uuid())
+  schoolId        String
+  fieldChanges    Json
+  status          RegistrationStatus @default(PENDING)
+  rejectionReason String?
+  reviewerId      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime
+  school          School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+}
+
+model ArticleCategory {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  articles    Article[]
+}
+
+model Article {
+  id             String          @id @default(uuid())
+  title          String
+  slug           String          @unique
+  content        String
+  thumbnailUrl   String?
+  categoryId     String
+  authorId       String?
+  status         ArticleStatus   @default(DRAFT)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  ogImageUrl     String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  category       ArticleCategory @relation(fields: [categoryId], references: [id])
+}
+
+model Program {
+  id           String        @id @default(uuid())
+  title        String
+  slug         String        @unique
+  description  String
+  thumbnailUrl String?
+  category     String
+  status       ArticleStatus @default(DRAFT)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Training {
+  id                   String                 @id @default(uuid())
+  title                String
+  description          String
+  thumbnailUrl         String?
+  location             String
+  startDate            DateTime
+  endDate              DateTime
+  quota                Int
+  registrationDeadline DateTime
+  speaker              String
+  status               ArticleStatus          @default(DRAFT)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  registrations        TrainingRegistration[]
+}
+
+model TrainingRegistration {
+  id          String   @id @default(uuid())
+  trainingId  String
+  name        String
+  email       String
+  whatsapp    String
+  institution String
+  position    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  training    Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+}
+
+model Scholarship {
+  id           String        @id @default(uuid())
+  title        String
+  provider     String
+  description  String
+  requirements String
+  targetLevel  String
+  deadline     DateTime
+  link         String?
+  status       ArticleStatus @default(DRAFT)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model EducationAid {
+  id             String           @id @default(uuid())
+  title          String
+  description    String
+  requirements   String
+  targetType     AidTargetType
+  status         Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  AidApplication AidApplication[]
+}
+
+model AidApplication {
+  id              String       @id @default(uuid())
+  educationAidId  String
+  schoolId        String
+  status          AidStatus    @default(PENDING)
+  rejectionReason String?
+  documentUrl     String?
+  remarks         String?
+  reviewerId      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime
+  EducationAid    EducationAid @relation(fields: [educationAidId], references: [id], onDelete: Cascade)
+  school          School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id               String   @id @default(uuid())
+  title            String
+  description      String
+  location         String
+  eventDate        DateTime
+  speaker          String?
+  quota            Int?
+  registrationLink String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Aspiration {
+  id            String           @id @default(uuid())
+  name          String
+  institution   String
+  email         String
+  category      String
+  title         String
+  message       String
+  attachmentUrl String?
+  status        AspirationStatus @default(RECEIVED)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  oldData   Json?
+  newData   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+enum RegistrationStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum AspirationStatus {
+  RECEIVED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum AidStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AidTargetType {
+  STUDENT
+  SCHOOL
+  FACILITY
+  TEACHER
+  FOUNDATION
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  SCHOOL
+}
+
+enum AccountStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SchoolLevel {
+  SD
+  SMP
+  SMA
+  SMK
+  MI
+  MTs
+  MA
+  OTHER
+}
+
+model RateLimit {
+  key       String   @id
+  count     Int
+  resetAt   DateTime
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+

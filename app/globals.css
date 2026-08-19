@@ -18,6 +18,8 @@
   --color-status-active: #16a34a;
   --color-status-upcoming: #f59e0b;
   --color-status-closed: #dc2626;
+  --font-inter: "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-plus-jakarta-sans: "Trebuchet MS", "Segoe UI", Arial, Helvetica, sans-serif;
 }
 
 html {
@@ -28,6 +30,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
 h1,
@@ -42,6 +45,11 @@ h6 {
 @layer components {
   .section-shell {
     @apply mx-auto max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
   }
 
   .glass-navbar {

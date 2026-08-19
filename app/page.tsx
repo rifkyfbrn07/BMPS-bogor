@@ -128,7 +128,7 @@ export default function Home() {
 
               <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
                 <Link
-                  href="/sekolah"
+                  href="/daftar-sekolah"
                   className="inline-flex items-center justify-center rounded-full bg-[#0d2f73] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1d468f]"
                 >
                   Daftarkan Sekolah
@@ -163,12 +163,12 @@ export default function Home() {
               </div>
 
               <div className="overflow-hidden">
-                <div className="scrollbar-hide flex gap-5 overflow-x-auto pb-4 [scrollbar-width:none]">
+                <div className="touch-scroll scrollbar-hide flex gap-5 overflow-x-auto pb-4 [scrollbar-width:none]">
                   {featuredSchools.map((school, index) => (
                     <Link
                       key={school.slug}
                       href={`/sekolah/${school.slug}`}
-                      className="group relative min-h-[430px] min-w-[260px] overflow-hidden rounded-[26px] border border-white/15 shadow-[0_20px_45px_rgba(2,10,23,0.25)] sm:min-w-[280px]"
+                      className="group relative min-h-[390px] min-w-[82vw] snap-start overflow-hidden rounded-[26px] border border-white/15 shadow-[0_20px_45px_rgba(2,10,23,0.25)] sm:min-w-[280px]"
                     >
                       <div className="absolute inset-0">
                         <Image
@@ -248,7 +248,7 @@ export default function Home() {
       <section className="bg-[#edf5ff] py-20">
         <div className="section-shell">
           <div className="grid gap-8 lg:grid-cols-[45%_55%] lg:items-stretch">
-            <div className="relative min-h-[420px] overflow-hidden rounded-[22px] bg-slate-200 shadow-[0_18px_40px_rgba(15,35,80,0.08)] lg:min-h-full">
+            <div className="relative min-h-[280px] overflow-hidden rounded-[22px] bg-slate-200 shadow-[0_18px_40px_rgba(15,35,80,0.08)] sm:min-h-[360px] lg:min-h-full">
               <Image
                 src="/bg.png"
                 alt="Program BMPS Bogor"
@@ -419,7 +419,7 @@ export default function Home() {
                 </p>
                 <div className="mt-7 flex justify-center">
                   <Link
-                    href="/kontak"
+                    href="/daftar-sekolah"
                     className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#1f5aa8] shadow-[0_10px_20px_rgba(255,255,255,0.14)] transition duration-200 hover:-translate-y-0.5 hover:bg-slate-100"
                   >
                     Daftarkan Sekolah/Yayasan

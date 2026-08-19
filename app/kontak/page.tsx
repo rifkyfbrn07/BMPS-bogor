@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
+import RegistrationForm from "@/components/RegistrationForm";
 
 export default function ContactPage() {
   return (
@@ -12,7 +13,9 @@ export default function ContactPage() {
       />
 
       <div className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="soft-panel p-8">
+        <RegistrationForm />
+        <div className="space-y-6">
+        <div className="soft-panel p-5 sm:p-8">
           <div className="space-y-5 text-slate-600">
             <div className="flex items-start gap-3">
               <MapPin className="mt-1 h-5 w-5 text-blue-royal" />
@@ -38,7 +41,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="soft-panel bg-slate-50 p-8">
+        <div className="soft-panel bg-slate-50 p-5 sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-royal">
             Informasi tambahan
           </p>
@@ -56,6 +59,7 @@ export default function ContactPage() {
             Kenali BMPS
             <ArrowRight className="h-4 w-4" />
           </Link>
+        </div>
         </div>
       </div>
     </div>

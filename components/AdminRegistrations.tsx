@@ -1,0 +1,25 @@
+"use client";
+import { useEffect, useState } from "react";
+
+type Registration = { id: string; registrationNumber: string; name: string; npsn: string; email: string; status: string; createdAt: string; rejectionReason?: string | null };
+export default function AdminRegistrations() {
+  const [items, setItems] = useState<Registration[]>([]); const [accounts, setAccounts] = useState<{ id: string; name: string; email: string }[]>([]); const [message, setMessage] = useState(""); const [loading, setLoading] = useState(true);
+  async function load() { setLoading(true); const res = await fetch("/api/admin/registrations"); const data = await res.json(); setLoading(false); if (!res.ok) { setMessage(data.message ?? "Gagal memuat data."); return; } setItems(data.data); }
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/admin/registrations")
+      .then(async (res) => ({ res, data: await res.json() }))
+      .then(({ res, data }) => { if (!cancelled) { if (!res.ok) setMessage(data.message ?? "Gagal memuat data."); else setItems(data.data); setLoading(false); } })
+      .catch(() => { if (!cancelled) { setMessage("Gagal memuat data."); setLoading(false); } });
+    void fetch("/api/admin/users").then(async (res) => ({ res, data: await res.json() })).then(({ res, data }) => { if (!cancelled && res.ok) setAccounts(data.data); });
+    return () => { cancelled = true; };
+  }, []);
+  async function decide(id: string, action: "APPROVE" | "REJECT") {
+    const rejectionReason = action === "REJECT" ? window.prompt("Alasan penolakan (wajib):") : undefined;
+    if (action === "REJECT" && !rejectionReason?.trim()) return;
+    const res = await fetch(`/api/admin/registrations/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(action === "APPROVE" ? { action } : { status: "REJECTED", rejectionReason }) });
+    const data = await res.json(); if (!res.ok) { setMessage(data.message ?? "Keputusan gagal disimpan."); return; } await load();
+  }
+  async function decideAccount(id: string, status: "APPROVED" | "REJECTED") { const rejectionReason = status === "REJECTED" ? window.prompt("Alasan penolakan akun (wajib):") : undefined; if (status === "REJECTED" && !rejectionReason?.trim()) return; const res = await fetch(`/api/admin/users/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status, rejectionReason }) }); const data = await res.json(); if (!res.ok) { setMessage(data.message ?? "Keputusan akun gagal."); return; } setAccounts((current) => current.filter((account) => account.id !== id)); }
+  return <section><p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-royal">Administrasi</p><h1 className="mt-2 text-3xl font-bold text-navy-deep">Verifikasi pendaftaran</h1><p className="mt-2 text-slate-600">Akun dan pendaftaran sekolah disetujui secara terpisah.</p>{message && <p className="mt-4 text-sm text-red-700">{message}</p>}<div className="mt-7 rounded-[28px] border border-slate-200 bg-white p-5"><h2 className="text-lg font-bold text-navy-deep">Akun menunggu verifikasi</h2><div className="mt-4 space-y-3">{accounts.length ? accounts.map((account) => <div key={account.id} className="flex flex-col gap-3 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between"><span><b>{account.name}</b><br /><small>{account.email}</small></span><div className="flex gap-2"><button onClick={() => decideAccount(account.id, "APPROVED")} className="rounded-full bg-emerald-600 px-3 py-2 text-xs font-semibold text-white">Terima</button><button onClick={() => decideAccount(account.id, "REJECTED")} className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white">Tolak</button></div></div>) : <p className="text-sm text-slate-500">Tidak ada akun menunggu.</p>}</div></div><div className="mt-7 overflow-x-auto rounded-[28px] border border-slate-200 bg-white"><table className="w-full min-w-[760px] text-left text-sm"><thead className="bg-slate-50 text-slate-600"><tr><th className="p-4">Pendaftar</th><th className="p-4">NPSN</th><th className="p-4">Status</th><th className="p-4">Tanggal</th><th className="p-4">Keputusan</th></tr></thead><tbody>{loading ? <tr><td className="p-4" colSpan={5}>Memuat...</td></tr> : items.map((item) => <tr key={item.id} className="border-t border-slate-100"><td className="p-4"><p className="font-semibold text-navy-deep">{item.name}</p><p className="text-slate-500">{item.registrationNumber}</p></td><td className="p-4">{item.npsn}</td><td className="p-4">{item.status}</td><td className="p-4">{new Date(item.createdAt).toLocaleDateString("id-ID")}</td><td className="p-4">{item.status === "PENDING" || item.status === "UNDER_REVIEW" ? <div className="flex gap-2"><button onClick={() => decide(item.id, "APPROVE")} className="rounded-full bg-emerald-600 px-3 py-2 text-xs font-semibold text-white">Terima</button><button onClick={() => decide(item.id, "REJECT")} className="rounded-full bg-red-600 px-3 py-2 text-xs font-semibold text-white">Tolak</button></div> : "—"}</td></tr>)}</tbody></table></div></section>;
+}

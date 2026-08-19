@@ -62,7 +62,7 @@ export default function Navbar() {
 
           <div className="hidden items-center gap-2.5 lg:flex">
             <Link
-              href="/sekolah"
+              href="/daftar-sekolah"
               className="inline-flex items-center justify-center rounded-full bg-[#1f5aa8] px-[18px] py-[11px] text-[12px] font-semibold text-white shadow-[0_8px_18px_rgba(31,90,168,0.18)] transition-colors hover:bg-[#174d9d]"
             >
               Daftarkan Sekolah & Yayasan
@@ -110,7 +110,7 @@ export default function Navbar() {
 
             <div className="mt-2 grid gap-2">
               <Link
-                href="/sekolah"
+                href="/daftar-sekolah"
                 onClick={() => setOpen(false)}
                 className="rounded-full bg-[#1f5aa8] px-4 py-3 text-center text-sm font-semibold text-white shadow-[0_8px_18px_rgba(31,90,168,0.18)] transition-colors hover:bg-[#174d9d]"
               >
