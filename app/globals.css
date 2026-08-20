@@ -18,12 +18,13 @@
   --color-status-active: #16a34a;
   --color-status-upcoming: #f59e0b;
   --color-status-closed: #dc2626;
-  --font-inter: "Segoe UI", Arial, Helvetica, sans-serif;
-  --font-plus-jakarta-sans: "Trebuchet MS", "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-inter: var(--font-plus-jakarta), "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-plus-jakarta-sans: var(--font-plus-jakarta), "Segoe UI", Arial, Helvetica, sans-serif;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -78,6 +79,42 @@ h6 {
 
 .animate-fade-in-up {
   animation: fade-in-up 0.6s ease-out both;
+}
+
+.auth-brand-panel {
+  background: linear-gradient(135deg, #0b1f4d 0%, #102b6b 58%, #1546a0 100%);
+}
+
+.auth-grid {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom right, black, transparent 72%);
+}
+
+.auth-orbit {
+  animation: auth-drift 14s ease-in-out infinite alternate;
+}
+
+.auth-orbit-two {
+  animation-delay: -5s;
+  animation-duration: 18s;
+}
+
+.auth-input:focus {
+  border-color: var(--color-blue-medium);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+@keyframes auth-drift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to { transform: translate3d(12px, -10px, 0) rotate(5deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .auth-orbit {
+    animation: none;
+  }
 }
 
 .scrollbar-hide::-webkit-scrollbar {

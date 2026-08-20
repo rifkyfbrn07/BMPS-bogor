@@ -1,24 +1,32 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import SiteChrome from "@/components/SiteChrome";
+import { getSession } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "BMPS Bogor",
   description: "Website resmi BMPS Bogor",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta",
+  display: "swap",
+});
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await getSession();
+  const user = session
+    ? await prisma.user.findUnique({ where: { id: session.id }, select: { name: true, email: true } })
+    : null;
+
   return (
-    <html
-      lang="id"
-      className="h-full antialiased"
-    >
+    <html lang="id" className={`${plusJakartaSans.variable} h-full antialiased`}>
       <body className="min-h-full bg-slate-50 text-slate-800">
         <div className="flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <SiteChrome authenticated={Boolean(session && user)} userName={user?.name} userEmail={user?.email}>{children}</SiteChrome>
         </div>
       </body>
     </html>
