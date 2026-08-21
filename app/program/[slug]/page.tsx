@@ -32,7 +32,7 @@ export default function ProgramDetailPage({ params }: { params: { slug: string }
       </Link>
 
       <div className="mt-6 overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
-        <div className="relative h-[280px] w-full sm:h-[420px]">
+        <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[3/1]">
           <Image
             src={program.image}
             alt={program.title}
@@ -99,7 +99,7 @@ export default function ProgramDetailPage({ params }: { params: { slug: string }
                 href={`/program/${item.slug}`}
                 className="soft-panel overflow-hidden p-0"
               >
-                <div className="relative h-44 w-full">
+                <div className="relative aspect-[16/9] w-full">
                   <Image src={item.image} alt={item.title} fill className="object-cover" />
                 </div>
                 <div className="p-5">

@@ -26,7 +26,7 @@ export default function SchoolDetailPage({ params }: { params: { slug: string } 
       </Link>
 
       <div className="mt-6 overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
-        <div className="relative h-[280px] w-full sm:h-[420px]">
+        <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[3/1]">
           <Image src={school.image} alt={school.name} fill className="object-cover" priority />
         </div>
         <div className="p-6 sm:p-8 lg:p-10">

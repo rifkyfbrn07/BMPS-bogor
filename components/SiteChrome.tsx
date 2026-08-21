@@ -17,10 +17,11 @@ export default function SiteChrome({
 }) {
   const pathname = usePathname();
   const isAuthPage = pathname === "/login" || pathname === "/daftar";
-  const isHeroPage = pathname === "/" || /^\/(berita|pelatihan|program|sekolah)\/[^/]+$/.test(pathname);
+  const isHeroPage = pathname === "/";
+  const isProfileHero = pathname === "/profile";
   return (
     <>
-      {!isAuthPage && <Navbar variant={isHeroPage ? "hero" : "solid"} authenticated={authenticated} userName={userName} userEmail={userEmail} />}
+      {!isAuthPage && <Navbar variant={isHeroPage || isProfileHero ? "hero" : "solid"} authenticated={authenticated} userName={userName} userEmail={userEmail} />}
       <main className={isAuthPage ? "flex-1" : "flex-1"}>{children}</main>
       {!isAuthPage && <Footer />}
     </>

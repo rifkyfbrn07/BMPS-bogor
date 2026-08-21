@@ -14,7 +14,7 @@ interface ImageGalleryProps {
 export default function ImageGallery({ main, items }: ImageGalleryProps) {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <div className="group relative h-80 overflow-hidden rounded-3xl sm:h-[420px]">
+      <div className="group relative aspect-[4/3] overflow-hidden rounded-3xl sm:aspect-[16/9]">
         <Image
           src={main.image}
           alt={main.title}
@@ -35,7 +35,7 @@ export default function ImageGallery({ main, items }: ImageGalleryProps) {
         {items.map((item) => (
           <div
             key={item.title}
-            className="group relative h-36 overflow-hidden rounded-3xl sm:h-[200px]"
+            className="group relative aspect-[4/3] overflow-hidden rounded-3xl"
           >
             <Image
               src={item.image}

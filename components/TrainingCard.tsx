@@ -11,7 +11,7 @@ export default function TrainingCard({ training }: { training: Training }) {
       href={`/pelatihan/${training.slug}`}
       className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-1 hover:shadow-lg sm:flex-row"
     >
-      <div className="relative h-48 w-full shrink-0 overflow-hidden sm:h-auto sm:w-64">
+      <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden sm:aspect-auto sm:h-auto sm:w-64">
         <Image
           src={training.image}
           alt={training.title}

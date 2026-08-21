@@ -3,14 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --background: #f8fafc;
+  --background: #ffffff;
   --foreground: #0f172a;
+
+  --brand-primary: #174ea6;
+  --brand-primary-deep: #123f8a;
+  --brand-primary-soft: #eaf2ff;
+  --navy-deep: #172033;
+  --navy-soft: #475569;
 
   --color-navy-deep: #0b1f4d;
   --color-navy: #102b6b;
-  --color-blue-royal: #1546a0;
+  --color-blue-royal: var(--brand-primary);
   --color-blue-medium: #2563eb;
-  --color-blue-light: #eaf2ff;
+  --color-blue-light: var(--brand-primary-soft);
   --color-off-white: #f7f9fc;
   --color-gray-light: #eef1f6;
   --color-gray-soft: #f4f6fb;
@@ -18,8 +24,9 @@
   --color-status-active: #16a34a;
   --color-status-upcoming: #f59e0b;
   --color-status-closed: #dc2626;
-  --font-inter: var(--font-plus-jakarta), "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-inter-family: var(--font-inter), "Segoe UI", Arial, Helvetica, sans-serif;
   --font-plus-jakarta-sans: var(--font-plus-jakarta), "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-primary: var(--font-plus-jakarta-sans);
 }
 
 html {
@@ -30,7 +37,8 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-family: var(--font-primary);
+  line-height: 1.6;
   overflow-x: hidden;
 }
 
@@ -40,12 +48,20 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-plus-jakarta-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-plus-jakarta-sans), "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-plus-jakarta-sans), "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+.font-ui {
+  font-family: var(--font-primary);
 }
 
 @layer components {
   .section-shell {
-    @apply mx-auto max-w-6xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8;
   }
 
   .touch-scroll {
@@ -62,9 +78,10 @@ h6 {
   }
 
   .soft-panel {
-    @apply rounded-[28px] border border-slate-200/70 bg-white shadow-[0_20px_45px_rgba(15,35,80,0.05)];
+    @apply rounded-[22px] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,35,80,0.04)];
   }
 }
+
 
 @keyframes fade-in-up {
   from {

@@ -42,7 +42,7 @@ export default function BeritaPage() {
         description="Kumpulan berita, kegiatan, dan perkembangan pendidikan swasta di wilayah Bogor."
       />
 
-      <div className="mt-8 flex flex-col gap-4 rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5 xl:flex-row xl:items-center xl:justify-between">
+      <div className="mt-8 flex flex-col gap-4 rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_12px_28px_rgba(15,35,80,0.03)] sm:p-5 xl:flex-row xl:items-center xl:justify-between">
         <div className="w-full xl:max-w-md">
           <SearchBar
             value={query}
@@ -78,7 +78,7 @@ export default function BeritaPage() {
       <div className="mt-8">
         {currentItems.length > 0 ? (
           <>
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {currentItems.map((item) => (
                 <NewsCard key={item.slug} item={item} />
               ))}

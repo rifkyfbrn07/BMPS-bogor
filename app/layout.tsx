@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import SiteChrome from "@/components/SiteChrome";
 import { getSession } from "@/lib/auth";
@@ -16,6 +16,12 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
   const user = session
@@ -23,7 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     : null;
 
   return (
-    <html lang="id" className={`${plusJakartaSans.variable} h-full antialiased`}>
+    <html lang="id" className={`${plusJakartaSans.variable} ${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-slate-50 text-slate-800">
         <div className="flex min-h-screen flex-col">
           <SiteChrome authenticated={Boolean(session && user)} userName={user?.name} userEmail={user?.email}>{children}</SiteChrome>
