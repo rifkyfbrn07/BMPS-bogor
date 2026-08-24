@@ -68,7 +68,6 @@ export default function LoginForm() {
         <Link href="/daftar" className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold text-blue-royal transition hover:text-navy-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-medium/40 focus-visible:ring-offset-4">
           Daftar akun login <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
         </Link>
-        <p className="mx-auto mt-4 max-w-xs text-xs leading-5 text-slate-400">Akun baru harus disetujui admin sebelum dapat digunakan.</p>
       </div>
     </form>
   );

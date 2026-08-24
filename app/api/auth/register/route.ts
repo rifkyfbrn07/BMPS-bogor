@@ -9,9 +9,11 @@ export async function POST(request: Request) {
   const parsed = accountRegistrationSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ message: parsed.error.issues[0]?.message ?? "Data pendaftaran akun tidak valid." }, { status: 400 });
   try {
-    const user = await prisma.user.create({ data: { name: parsed.data.name, email: parsed.data.email.toLowerCase(), password: await bcrypt.hash(parsed.data.password, 12), role: "SCHOOL", accountStatus: "PENDING" } });
+    const user = await prisma.user.create({ data: { name: parsed.data.name, email: parsed.data.email.toLowerCase(), password: await bcrypt.hash(parsed.data.password, 12), role: "SCHOOL", accountStatus: "APPROVED" } });
     await prisma.auditLog.create({ data: { userId: user.id, action: "ACCOUNT_REGISTERED", entity: "User", entityId: user.id } });
-    return NextResponse.json({ message: "Akun berhasil didaftarkan dan menunggu verifikasi admin." }, { status: 201 });
+    return NextResponse.json({ 
+      message: "Akun berhasil didaftarkan dan telah aktif. Silakan login." 
+    }, { status: 201 });
   } catch (error) {
     if (typeof error === "object" && error && "code" in error && (error as { code?: string }).code === "P2002") return NextResponse.json({ message: "Email ini sudah terdaftar." }, { status: 409 });
     console.error("Gagal mendaftarkan akun", error); return NextResponse.json({ message: "Pendaftaran akun belum dapat diproses." }, { status: 500 });

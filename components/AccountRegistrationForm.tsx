@@ -38,7 +38,7 @@ export default function AccountRegistrationForm() {
           <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
         </div>
         <p className="mt-7 text-xs font-bold uppercase tracking-[0.2em] text-emerald-700">Pendaftaran berhasil</p>
-        <h2 className="mt-3 text-3xl font-bold tracking-[-0.025em] text-navy-deep">Akun Anda sedang diverifikasi</h2>
+        <h2 className="mt-3 text-3xl font-bold tracking-[-0.025em] text-navy-deep">Akun Anda Telah Aktif</h2>
         <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-slate-500">{message}</p>
         <Link href="/login" className="mt-8 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-navy px-5 py-3 text-sm font-bold text-white shadow-[0_10px_22px_rgba(16,43,107,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-blue-royal focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-medium/25 active:translate-y-0">
           Kembali ke Login <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -102,7 +102,7 @@ export default function AccountRegistrationForm() {
 
       <div className="mt-7 border-t border-slate-200 pt-5 text-center text-sm text-slate-500">
         <p>Sudah memiliki akun? <Link href="/login" className="font-bold text-blue-royal transition hover:text-navy-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-medium/40 focus-visible:ring-offset-4">Masuk</Link></p>
-        <p className="mx-auto mt-4 max-w-xs text-xs leading-5 text-slate-400">Akun baru akan aktif setelah mendapat persetujuan admin.</p>
+        <p className="mx-auto mt-4 max-w-xs text-xs leading-5 text-slate-400">Akun baru langsung aktif dan dapat digunakan.</p>
       </div>
     </form>
   );
