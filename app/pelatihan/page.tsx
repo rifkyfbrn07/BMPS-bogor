@@ -5,12 +5,13 @@ import SearchBar from "@/components/SearchBar";
 import SectionHeading from "@/components/SectionHeading";
 import TrainingCard from "@/components/TrainingCard";
 import { trainings as staticTrainings } from "@/lib/data/trainings";
+import type { Training } from "@/lib/types";
 import Pagination from "@/components/Pagination";
 
 const itemsPerPage = 4;
 
 export default function PelatihanPage() {
-  const [trainings, setTrainings] = useState<any[]>(staticTrainings);
+  const [trainings, setTrainings] = useState<Training[]>(staticTrainings);
   const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 

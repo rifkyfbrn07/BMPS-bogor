@@ -7,11 +7,12 @@ import FilterButton from "@/components/FilterButton";
 import Pagination from "@/components/Pagination";
 import ProgramCard from "@/components/ProgramCard";
 import { programs as staticPrograms } from "@/lib/data/programs";
+import type { Program } from "@/lib/types";
 
 const itemsPerPage = 6;
 
 export default function ProgramPage() {
-  const [programs, setPrograms] = useState<any[]>(staticPrograms);
+  const [programs, setPrograms] = useState<Program[]>(staticPrograms);
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);

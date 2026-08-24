@@ -6,6 +6,7 @@ import StatusBadge from "@/components/StatusBadge";
 import { getTrainingBySlug, trainings } from "@/lib/data/trainings";
 import { formatDate } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
+import type { Training } from "@/lib/types";
 
 export async function generateStaticParams() {
   try {
@@ -26,7 +27,7 @@ export async function generateStaticParams() {
 
 export default async function TrainingDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  let training: any = null;
+  let training: Training | null = null;
 
   try {
     const dbTrainings = await prisma.training.findMany();
@@ -52,7 +53,7 @@ export default async function TrainingDetailPage({ params }: { params: Promise<{
 
   // Fallback to static
   if (!training) {
-    training = getTrainingBySlug(slug);
+    training = getTrainingBySlug(slug) || null;
   }
 
   if (!training) {

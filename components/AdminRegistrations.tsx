@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 type Registration = { id: string; registrationNumber: string; name: string; npsn: string; email: string; status: string; createdAt: string; rejectionReason?: string | null };
 type Article = { id: string; title: string; content: string; thumbnailUrl?: string | null; category?: { name: string } | null; status: string; publishedAt?: string | null };
@@ -32,7 +32,7 @@ export default function AdminRegistrations() {
   const [programForm, setProgramForm] = useState({ title: "", description: "", category: "Pendidikan", thumbnailUrl: "", status: "PUBLISHED" });
   const [trainingForm, setTrainingForm] = useState({ title: "", description: "", location: "", startDate: "", quota: 50, speaker: "Pembicara Utama", thumbnailUrl: "", status: "PUBLISHED" });
 
-  async function loadData() {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setMessage("");
     try {
@@ -60,11 +60,14 @@ export default function AdminRegistrations() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [activeTab]);
 
   useEffect(() => {
-    loadData();
-  }, [activeTab]);
+    const timer = setTimeout(() => {
+      loadData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadData]);
 
   // Deciding school registration
   async function decide(id: string, action: "APPROVE" | "REJECT") {
@@ -142,35 +145,38 @@ export default function AdminRegistrations() {
   }
 
   // Open Edit Modal
-  function openEdit(item: any) {
+  function openEdit(item: Article | Program | Training) {
     setModalMode("edit");
     setEditId(item.id);
     if (activeTab === "articles") {
+      const art = item as Article;
       setArticleForm({
-        title: item.title,
-        content: item.content,
-        categoryName: item.category?.name || "Kegiatan",
-        thumbnailUrl: item.thumbnailUrl || "",
-        status: item.status
+        title: art.title,
+        content: art.content,
+        categoryName: art.category?.name || "Kegiatan",
+        thumbnailUrl: art.thumbnailUrl || "",
+        status: art.status
       });
     } else if (activeTab === "programs") {
+      const prg = item as Program;
       setProgramForm({
-        title: item.title,
-        description: item.description,
-        category: item.category,
-        thumbnailUrl: item.thumbnailUrl || "",
-        status: item.status
+        title: prg.title,
+        description: prg.description,
+        category: prg.category,
+        thumbnailUrl: prg.thumbnailUrl || "",
+        status: prg.status
       });
     } else if (activeTab === "trainings") {
+      const trn = item as Training;
       setTrainingForm({
-        title: item.title,
-        description: item.description,
-        location: item.location,
-        startDate: item.startDate ? item.startDate.split("T")[0] : "",
-        quota: item.quota,
-        speaker: item.speaker,
-        thumbnailUrl: item.thumbnailUrl || "",
-        status: item.status
+        title: trn.title,
+        description: trn.description,
+        location: trn.location,
+        startDate: trn.startDate ? trn.startDate.split("T")[0] : "",
+        quota: trn.quota,
+        speaker: trn.speaker,
+        thumbnailUrl: trn.thumbnailUrl || "",
+        status: trn.status
       });
     }
     setModalOpen(true);

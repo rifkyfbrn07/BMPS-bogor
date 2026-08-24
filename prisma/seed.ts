@@ -1,7 +1,7 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient, ArticleStatus } from "../generated/prisma/client";
 
 // Import starter data
 import { news } from "../lib/data/news";
@@ -18,7 +18,7 @@ const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: data
 async function main() {
   // 1. Seed Super Admin
   const passwordHash = await bcrypt.hash(seedPassword, 12);
-  const superAdmin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: "superadmin@bmpsbogor.or.id" },
     update: { name: "Super Admin BMPS", role: "SUPER_ADMIN", password: passwordHash, accountStatus: "APPROVED" },
     create: { name: "Super Admin BMPS", email: "superadmin@bmpsbogor.or.id", role: "SUPER_ADMIN", password: passwordHash, accountStatus: "APPROVED" },
@@ -43,7 +43,7 @@ async function main() {
   // 3. Seed Articles (News)
   for (const item of news) {
     const categoryId = categories[item.category] || Object.values(categories)[0];
-    const status = item.tab === "terpopuler" ? "PUBLISHED" : "PUBLISHED";
+    const status: ArticleStatus = "PUBLISHED";
     await prisma.article.upsert({
       where: { slug: item.slug },
       update: {
@@ -51,7 +51,7 @@ async function main() {
         content: item.content,
         thumbnailUrl: item.image,
         categoryId,
-        status: status as any,
+        status,
         publishedAt: new Date(item.date),
         seoTitle: item.title,
         seoDescription: item.excerpt,
@@ -62,7 +62,7 @@ async function main() {
         content: item.content,
         thumbnailUrl: item.image,
         categoryId,
-        status: status as any,
+        status,
         publishedAt: new Date(item.date),
         seoTitle: item.title,
         seoDescription: item.excerpt,
@@ -73,7 +73,7 @@ async function main() {
 
   // 4. Seed Programs
   for (const program of programs) {
-    const status = program.status === "closed" ? "ARCHIVED" : "PUBLISHED";
+    const status: ArticleStatus = program.status === "closed" ? "ARCHIVED" : "PUBLISHED";
     await prisma.program.upsert({
       where: { slug: program.slug },
       update: {
@@ -81,7 +81,7 @@ async function main() {
         description: program.description,
         thumbnailUrl: program.image,
         category: program.category,
-        status: status as any,
+        status,
       },
       create: {
         title: program.title,
@@ -89,7 +89,7 @@ async function main() {
         description: program.description,
         thumbnailUrl: program.image,
         category: program.category,
-        status: status as any,
+        status,
       },
     });
   }
@@ -97,10 +97,10 @@ async function main() {
 
   // 5. Seed Trainings
   for (const training of trainings) {
-    const status = training.status === "closed" ? "ARCHIVED" : "PUBLISHED";
+    const status: ArticleStatus = training.status === "closed" ? "ARCHIVED" : "PUBLISHED";
     const dateObj = new Date(training.date);
-    const id = training.slug; // use slug as unique identifier logic or fallback title query
-    // upsert requires unique, so let's find or create based on title or slug
+    
+    // find or create based on title or slug
     const existing = await prisma.training.findFirst({
       where: { title: training.title }
     });
@@ -116,7 +116,7 @@ async function main() {
           quota: training.quota,
           registrationDeadline: dateObj,
           speaker: "Pembicara Utama",
-          status: status as any,
+          status,
         }
       });
     } else {
@@ -131,7 +131,7 @@ async function main() {
           quota: training.quota,
           registrationDeadline: dateObj,
           speaker: "Pembicara Utama",
-          status: status as any,
+          status,
         }
       });
     }

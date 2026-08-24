@@ -6,11 +6,12 @@ import Pagination from "@/components/Pagination";
 import SearchBar from "@/components/SearchBar";
 import SectionHeading from "@/components/SectionHeading";
 import { news as staticNews } from "@/lib/data/news";
+import type { NewsItem } from "@/lib/types";
 
 const itemsPerPage = 6;
 
 export default function BeritaPage() {
-  const [news, setNews] = useState<any[]>(staticNews);
+  const [news, setNews] = useState<NewsItem[]>(staticNews);
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);

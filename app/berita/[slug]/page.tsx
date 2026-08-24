@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getNewsBySlug, news } from "@/lib/data/news";
 import { formatDate, formatViews } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
+import type { NewsItem } from "@/lib/types";
 
 export async function generateStaticParams() {
   try {
@@ -23,7 +24,7 @@ export async function generateStaticParams() {
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  let item: any = null;
+  let item: NewsItem | null = null;
 
   try {
     const dbArticle = await prisma.article.findUnique({
@@ -40,6 +41,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
         excerpt: dbArticle.seoDescription || "",
         content: dbArticle.content,
         views: 1240, // standard mockup views
+        tab: "terbaru",
       };
     }
   } catch (dbErr) {
@@ -48,7 +50,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
 
   // Fallback to static news
   if (!item) {
-    item = getNewsBySlug(slug);
+    item = getNewsBySlug(slug) || null;
   }
 
   if (!item) {
@@ -56,7 +58,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   }
 
   // Fetch related news
-  let relatedNews: any[] = [];
+  let relatedNews: Array<{ slug: string; title: string; category: string; image: string }> = [];
   try {
     const dbRelated = await prisma.article.findMany({
       where: {

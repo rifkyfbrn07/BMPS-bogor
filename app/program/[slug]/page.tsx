@@ -6,6 +6,7 @@ import StatusBadge from "@/components/StatusBadge";
 import { getProgramBySlug, programs } from "@/lib/data/programs";
 import { formatDate } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
+import type { Program } from "@/lib/types";
 
 export async function generateStaticParams() {
   try {
@@ -24,7 +25,7 @@ export async function generateStaticParams() {
 
 export default async function ProgramDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  let program: any = null;
+  let program: Program | null = null;
 
   try {
     const dbProgram = await prisma.program.findUnique({
@@ -48,7 +49,7 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
 
   // Fallback to static
   if (!program) {
-    program = getProgramBySlug(slug);
+    program = getProgramBySlug(slug) || null;
   }
 
   if (!program) {
@@ -56,7 +57,7 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
   }
 
   // Filter related programs
-  let relatedPrograms: any[] = [];
+  let relatedPrograms: Array<{ slug: string; title: string; category: string; image: string }> = [];
   try {
     const dbRelated = await prisma.program.findMany({
       where: {

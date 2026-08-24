@@ -126,7 +126,6 @@ export async function POST(
     }
 
     if (resource === "trainings") {
-      const slug = body.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
       const data = await prisma.training.create({
         data: {
           title: body.title,
