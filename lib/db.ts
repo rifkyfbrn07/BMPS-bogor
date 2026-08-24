@@ -1,10 +1,6 @@
 import { Pool } from "pg";
 
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString) {
-  throw new Error("DATABASE_URL belum dikonfigurasi.");
-}
+const connectionString = process.env.DATABASE_URL || "postgresql://mock:mock@localhost:5432/mock?schema=public";
 
 const globalForDatabase = globalThis as unknown as { pool?: Pool };
 

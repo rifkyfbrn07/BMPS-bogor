@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function PATCH(request: Request, context: RouteContext<"/api/admin/users/[id]">) {
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const admin = await requireRole("ADMIN", "SUPER_ADMIN"); const { id } = await context.params; const body = await request.json();
     if (body.status !== "APPROVED" && body.status !== "REJECTED") return NextResponse.json({ message: "Status tidak valid." }, { status: 400 });

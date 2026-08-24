@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { approveRegistration } from "@/lib/services/registrations";
 import { registrationDecisionSchema } from "@/lib/validation";
 
-export async function GET(_request: Request, context: RouteContext<"/api/admin/registrations/[id]">) {
+export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     await requireRole("ADMIN", "SUPER_ADMIN"); const { id } = await context.params;
     const data = await prisma.schoolRegistration.findUnique({ where: { id } });
@@ -12,7 +12,7 @@ export async function GET(_request: Request, context: RouteContext<"/api/admin/r
   } catch { return NextResponse.json({ message: "Akses ditolak." }, { status: 403 }); }
 }
 
-export async function PATCH(request: Request, context: RouteContext<"/api/admin/registrations/[id]">) {
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const admin = await requireRole("ADMIN", "SUPER_ADMIN"); const { id } = await context.params; const body = await request.json();
     if (body.action === "APPROVE") return NextResponse.json({ data: await approveRegistration(id, admin.id) });

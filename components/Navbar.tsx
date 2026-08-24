@@ -24,7 +24,7 @@ type NavbarProps = {
   userEmail?: string;
 };
 
-export default function Navbar({ variant = "solid", authenticated = false, userName, userEmail }: NavbarProps) {
+export default function Navbar({ authenticated = false, userName, userEmail }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
