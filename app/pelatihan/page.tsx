@@ -1,17 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import SectionHeading from "@/components/SectionHeading";
 import TrainingCard from "@/components/TrainingCard";
-import { trainings } from "@/lib/data/trainings";
+import { trainings as staticTrainings } from "@/lib/data/trainings";
 import Pagination from "@/components/Pagination";
 
 const itemsPerPage = 4;
 
 export default function PelatihanPage() {
+  const [trainings, setTrainings] = useState<any[]>(staticTrainings);
   const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    fetch("/api/content/trainings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.data) setTrainings(data.data);
+      })
+      .catch((err) => console.error("Gagal memuat pelatihan:", err));
+  }, []);
 
   const filteredTrainings = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -23,7 +33,7 @@ export default function PelatihanPage() {
         training.description.toLowerCase().includes(normalized)
       );
     });
-  }, [query]);
+  }, [query, trainings]);
 
   const totalPages = Math.max(1, Math.ceil(filteredTrainings.length / itemsPerPage));
   const currentItems = filteredTrainings.slice(

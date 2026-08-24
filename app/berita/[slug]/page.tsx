@@ -4,19 +4,84 @@ import { ArrowLeft, CalendarDays, Eye } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getNewsBySlug, news } from "@/lib/data/news";
 import { formatDate, formatViews } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  try {
+    const dbArticles = await prisma.article.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true }
+    });
+    if (dbArticles.length > 0) {
+      return dbArticles.map((item) => ({ slug: item.slug }));
+    }
+  } catch (err) {
+    console.warn("Gagal membuat static params berita dari DB, gunakan fallback:", err);
+  }
   return news.map((item) => ({ slug: item.slug }));
 }
 
-export default function NewsDetailPage({ params }: { params: { slug: string } }) {
-  const item = getNewsBySlug(params.slug);
+export default async function NewsDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  let item: any = null;
+
+  try {
+    const dbArticle = await prisma.article.findUnique({
+      where: { slug },
+      include: { category: true }
+    });
+    if (dbArticle) {
+      item = {
+        slug: dbArticle.slug,
+        title: dbArticle.title,
+        category: dbArticle.category?.name || "Umum",
+        date: dbArticle.publishedAt?.toISOString().split("T")[0] || dbArticle.createdAt.toISOString().split("T")[0],
+        image: dbArticle.thumbnailUrl || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop",
+        excerpt: dbArticle.seoDescription || "",
+        content: dbArticle.content,
+        views: 1240, // standard mockup views
+      };
+    }
+  } catch (dbErr) {
+    console.error("Gagal mengambil berita dari DB:", dbErr);
+  }
+
+  // Fallback to static news
+  if (!item) {
+    item = getNewsBySlug(slug);
+  }
 
   if (!item) {
     notFound();
   }
 
-  const relatedNews = news.filter((newsItem) => newsItem.slug !== item.slug).slice(0, 2);
+  // Fetch related news
+  let relatedNews: any[] = [];
+  try {
+    const dbRelated = await prisma.article.findMany({
+      where: {
+        status: "PUBLISHED",
+        slug: { not: slug }
+      },
+      include: { category: true },
+      take: 2,
+      orderBy: { publishedAt: "desc" }
+    });
+    if (dbRelated.length > 0) {
+      relatedNews = dbRelated.map(dbItem => ({
+        slug: dbItem.slug,
+        title: dbItem.title,
+        category: dbItem.category?.name || "Umum",
+        image: dbItem.thumbnailUrl || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop",
+      }));
+    }
+  } catch (err) {
+    console.warn("Gagal memuat berita terkait dari DB:", err);
+  }
+
+  if (relatedNews.length === 0) {
+    relatedNews = news.filter((newsItem) => newsItem.slug !== item.slug).slice(0, 2);
+  }
 
   return (
     <div className="section-shell py-12 sm:py-16 lg:py-20">

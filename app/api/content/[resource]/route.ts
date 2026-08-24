@@ -1,21 +1,131 @@
 import { NextResponse } from "next/server";
-import { news } from "@/lib/data/news";
-import { programs } from "@/lib/data/programs";
-import { schools } from "@/lib/data/schools";
-import { trainings } from "@/lib/data/trainings";
+import { prisma } from "@/lib/prisma";
 
-const content = { news, programs, schools, trainings };
+// Import starter/fallback static data
+import { news as staticNews } from "@/lib/data/news";
+import { programs as staticPrograms } from "@/lib/data/programs";
+import { schools as staticSchools } from "@/lib/data/schools";
+import { trainings as staticTrainings } from "@/lib/data/trainings";
 
 export async function GET(
   _request: Request,
   context: { params: Promise<{ resource: string }> }
 ) {
-  const { resource } = await context.params;
-  const items = content[resource as keyof typeof content];
+  try {
+    const { resource } = await context.params;
 
-  if (!items) {
+    // 1. News / Articles Resource
+    if (resource === "news") {
+      try {
+        const dbArticles = await prisma.article.findMany({
+          where: { status: "PUBLISHED" },
+          include: { category: true },
+          orderBy: { publishedAt: "desc" },
+        });
+
+        if (dbArticles.length > 0) {
+          const mappedArticles = dbArticles.map((item) => ({
+            slug: item.slug,
+            title: item.title,
+            category: item.category?.name || "Umum",
+            date: item.publishedAt?.toISOString().split("T")[0] || new Date().toISOString().split("T")[0],
+            image: item.thumbnailUrl || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop",
+            excerpt: item.seoDescription || "",
+            content: item.content,
+            views: 0,
+            tab: "terbaru",
+          }));
+          return NextResponse.json({ data: mappedArticles });
+        }
+      } catch (dbErr) {
+        console.warn("DB fetch failed for news, falling back to static:", dbErr);
+      }
+      return NextResponse.json({ data: staticNews });
+    }
+
+    // 2. Programs Resource
+    if (resource === "programs") {
+      try {
+        const dbPrograms = await prisma.program.findMany({
+          where: { status: "PUBLISHED" },
+          orderBy: { createdAt: "desc" },
+        });
+
+        if (dbPrograms.length > 0) {
+          const mappedPrograms = dbPrograms.map((item) => ({
+            slug: item.slug,
+            title: item.title,
+            category: item.category,
+            description: item.description,
+            image: item.thumbnailUrl || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
+            status: item.status === "ARCHIVED" ? "closed" : "active",
+            startDate: item.createdAt.toISOString().split("T")[0],
+            content: item.description,
+          }));
+          return NextResponse.json({ data: mappedPrograms });
+        }
+      } catch (dbErr) {
+        console.warn("DB fetch failed for programs, falling back to static:", dbErr);
+      }
+      return NextResponse.json({ data: staticPrograms });
+    }
+
+    // 3. Trainings Resource
+    if (resource === "trainings") {
+      try {
+        const dbTrainings = await prisma.training.findMany({
+          where: { status: "PUBLISHED" },
+          orderBy: { startDate: "desc" },
+        });
+
+        if (dbTrainings.length > 0) {
+          const mappedTrainings = dbTrainings.map((item) => ({
+            slug: item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            title: item.title,
+            image: item.thumbnailUrl || "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop",
+            date: item.startDate.toISOString().split("T")[0],
+            location: item.location,
+            quota: item.quota,
+            status: item.status === "ARCHIVED" ? "closed" : "active",
+            description: item.description,
+            content: item.description,
+          }));
+          return NextResponse.json({ data: mappedTrainings });
+        }
+      } catch (dbErr) {
+        console.warn("DB fetch failed for trainings, falling back to static:", dbErr);
+      }
+      return NextResponse.json({ data: staticTrainings });
+    }
+
+    // 4. Schools Resource
+    if (resource === "schools") {
+      try {
+        const dbSchools = await prisma.school.findMany({
+          orderBy: { name: "asc" },
+        });
+
+        if (dbSchools.length > 0) {
+          const mappedSchools = dbSchools.map((item) => ({
+            slug: item.slug,
+            name: item.name,
+            npsn: item.npsn,
+            level: item.level,
+            address: item.address || "",
+            district: item.district,
+            logoUrl: item.logoUrl || "/logo.png",
+          }));
+          return NextResponse.json({ data: mappedSchools });
+        }
+      } catch (dbErr) {
+        console.warn("DB fetch failed for schools, falling back to static:", dbErr);
+      }
+      return NextResponse.json({ data: staticSchools });
+    }
+
     return NextResponse.json({ message: "Sumber data tidak ditemukan." }, { status: 404 });
+  } catch (error) {
+    console.error("GET Public Content Error:", error);
+    return NextResponse.json({ message: "Gagal memproses data." }, { status: 500 });
   }
-
-  return NextResponse.json({ data: items });
 }

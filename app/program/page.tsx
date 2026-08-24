@@ -1,20 +1,33 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import SectionHeading from "@/components/SectionHeading";
 import SearchBar from "@/components/SearchBar";
 import FilterButton from "@/components/FilterButton";
 import Pagination from "@/components/Pagination";
 import ProgramCard from "@/components/ProgramCard";
-import { programs } from "@/lib/data/programs";
+import { programs as staticPrograms } from "@/lib/data/programs";
 
-const categories = ["Semua", ...new Set(programs.map((program) => program.category))];
 const itemsPerPage = 6;
 
 export default function ProgramPage() {
+  const [programs, setPrograms] = useState<any[]>(staticPrograms);
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    fetch("/api/content/programs")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.data) setPrograms(data.data);
+      })
+      .catch((err) => console.error("Gagal memuat program:", err));
+  }, []);
+
+  const categories = useMemo(() => {
+    return ["Semua", ...new Set(programs.map((program) => program.category))];
+  }, [programs]);
 
   const filteredPrograms = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -27,7 +40,7 @@ export default function ProgramPage() {
         program.description.toLowerCase().includes(normalized);
       return matchesCategory && matchesSearch;
     });
-  }, [query, activeCategory]);
+  }, [query, activeCategory, programs]);
 
   const totalPages = Math.max(1, Math.ceil(filteredPrograms.length / itemsPerPage));
   const currentItems = filteredPrograms.slice(

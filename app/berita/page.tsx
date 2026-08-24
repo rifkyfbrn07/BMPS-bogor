@@ -1,19 +1,32 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import NewsCard from "@/components/NewsCard";
 import Pagination from "@/components/Pagination";
 import SearchBar from "@/components/SearchBar";
 import SectionHeading from "@/components/SectionHeading";
-import { news } from "@/lib/data/news";
+import { news as staticNews } from "@/lib/data/news";
 
-const categories = ["Semua", ...new Set(news.map((item) => item.category))];
 const itemsPerPage = 6;
 
 export default function BeritaPage() {
+  const [news, setNews] = useState<any[]>(staticNews);
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    fetch("/api/content/news")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.data) setNews(data.data);
+      })
+      .catch((err) => console.error("Gagal memuat berita:", err));
+  }, []);
+
+  const categories = useMemo(() => {
+    return ["Semua", ...new Set(news.map((item) => item.category))];
+  }, [news]);
 
   const filteredNews = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -26,7 +39,7 @@ export default function BeritaPage() {
         item.excerpt.toLowerCase().includes(normalized);
       return matchesCategory && matchesSearch;
     });
-  }, [query, activeCategory]);
+  }, [query, activeCategory, news]);
 
   const totalPages = Math.max(1, Math.ceil(filteredNews.length / itemsPerPage));
   const currentItems = filteredNews.slice(

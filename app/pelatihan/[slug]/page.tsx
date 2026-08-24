@@ -5,13 +5,55 @@ import { notFound } from "next/navigation";
 import StatusBadge from "@/components/StatusBadge";
 import { getTrainingBySlug, trainings } from "@/lib/data/trainings";
 import { formatDate } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  try {
+    const dbTrainings = await prisma.training.findMany({
+      where: { status: "PUBLISHED" },
+      select: { title: true }
+    });
+    if (dbTrainings.length > 0) {
+      return dbTrainings.map((t) => ({
+        slug: t.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      }));
+    }
+  } catch (err) {
+    console.warn("Gagal membuat static params pelatihan dari DB, gunakan fallback:", err);
+  }
   return trainings.map((training) => ({ slug: training.slug }));
 }
 
-export default function TrainingDetailPage({ params }: { params: { slug: string } }) {
-  const training = getTrainingBySlug(params.slug);
+export default async function TrainingDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  let training: any = null;
+
+  try {
+    const dbTrainings = await prisma.training.findMany();
+    const dbMatch = dbTrainings.find(
+      (t) => t.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") === slug
+    );
+    if (dbMatch) {
+      training = {
+        slug,
+        title: dbMatch.title,
+        image: dbMatch.thumbnailUrl || "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop",
+        date: dbMatch.startDate.toISOString().split("T")[0],
+        location: dbMatch.location,
+        quota: dbMatch.quota,
+        status: dbMatch.status === "ARCHIVED" ? "closed" : "active",
+        description: dbMatch.description,
+        content: dbMatch.description,
+      };
+    }
+  } catch (dbErr) {
+    console.error("Gagal mengambil pelatihan dari DB:", dbErr);
+  }
+
+  // Fallback to static
+  if (!training) {
+    training = getTrainingBySlug(slug);
+  }
 
   if (!training) {
     notFound();

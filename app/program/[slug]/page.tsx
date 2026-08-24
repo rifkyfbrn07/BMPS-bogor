@@ -5,21 +5,85 @@ import { notFound } from "next/navigation";
 import StatusBadge from "@/components/StatusBadge";
 import { getProgramBySlug, programs } from "@/lib/data/programs";
 import { formatDate } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  try {
+    const dbPrograms = await prisma.program.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true }
+    });
+    if (dbPrograms.length > 0) {
+      return dbPrograms.map((program) => ({ slug: program.slug }));
+    }
+  } catch (err) {
+    console.warn("Gagal membuat static params program dari DB, gunakan fallback:", err);
+  }
   return programs.map((program) => ({ slug: program.slug }));
 }
 
-export default function ProgramDetailPage({ params }: { params: { slug: string } }) {
-  const program = getProgramBySlug(params.slug);
+export default async function ProgramDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  let program: any = null;
+
+  try {
+    const dbProgram = await prisma.program.findUnique({
+      where: { slug }
+    });
+    if (dbProgram) {
+      program = {
+        slug: dbProgram.slug,
+        title: dbProgram.title,
+        category: dbProgram.category,
+        description: dbProgram.description,
+        image: dbProgram.thumbnailUrl || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
+        status: dbProgram.status === "ARCHIVED" ? "closed" : "active",
+        startDate: dbProgram.createdAt.toISOString().split("T")[0],
+        content: dbProgram.description, // in fallback content is description
+      };
+    }
+  } catch (dbErr) {
+    console.error("Gagal mengambil program dari DB:", dbErr);
+  }
+
+  // Fallback to static
+  if (!program) {
+    program = getProgramBySlug(slug);
+  }
 
   if (!program) {
     notFound();
   }
 
-  const relatedPrograms = programs.filter(
-    (item) => item.slug !== program.slug && item.category === program.category
-  ).slice(0, 2);
+  // Filter related programs
+  let relatedPrograms: any[] = [];
+  try {
+    const dbRelated = await prisma.program.findMany({
+      where: {
+        status: "PUBLISHED",
+        slug: { not: slug },
+        category: program.category
+      },
+      take: 2,
+      orderBy: { createdAt: "desc" }
+    });
+    if (dbRelated.length > 0) {
+      relatedPrograms = dbRelated.map(dbItem => ({
+        slug: dbItem.slug,
+        title: dbItem.title,
+        category: dbItem.category,
+        image: dbItem.thumbnailUrl || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
+      }));
+    }
+  } catch (err) {
+    console.warn("Gagal memuat program terkait dari DB:", err);
+  }
+
+  if (relatedPrograms.length === 0) {
+    relatedPrograms = programs.filter(
+      (item) => item.slug !== program.slug && item.category === program.category
+    ).slice(0, 2);
+  }
 
   return (
     <div className="section-shell py-12 sm:py-16 lg:py-20">
