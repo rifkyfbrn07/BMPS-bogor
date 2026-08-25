@@ -19,7 +19,7 @@ export default function FilterButton({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition",
+        "max-w-full break-words rounded-full px-4 py-2 text-sm font-medium transition",
         active
           ? "bg-navy text-white shadow-sm"
           : "bg-gray-light text-slate-600 hover:bg-blue-light hover:text-blue-royal"

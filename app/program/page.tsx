@@ -50,15 +50,15 @@ export default function ProgramPage() {
   );
 
   return (
-    <div className="section-shell py-12 sm:py-16 lg:py-20">
+    <div className="section-shell w-full max-w-full overflow-x-clip py-8 sm:py-16 lg:py-20">
       <SectionHeading
         eyebrow=""
         title="Program BMPS Bogor"
         description="Berbagai inisiatif dan kegiatan yang ditujukan untuk memperkuat mutu pendidikan swasta di Bogor."
       />
 
-      <div className="mt-8 flex flex-col gap-4 rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5 xl:flex-row xl:items-center xl:justify-between">
-        <div className="w-full xl:max-w-md">
+      <div className="mt-6 flex w-full max-w-full flex-col gap-4 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:mt-8 sm:rounded-[28px] sm:p-5 xl:flex-row xl:items-center xl:justify-between">
+        <div className="w-full min-w-0 xl:max-w-md">
           <SearchBar
             value={query}
             onChange={(value) => {
@@ -69,7 +69,7 @@ export default function ProgramPage() {
           />
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex w-full min-w-0 flex-wrap gap-2 xl:w-auto">
           {categories.map((category) => (
             <FilterButton
               key={category}
@@ -84,10 +84,10 @@ export default function ProgramPage() {
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-6 sm:mt-8">
         {currentItems.length > 0 ? (
           <>
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid w-full min-w-0 grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
               {currentItems.map((program) => (
                 <ProgramCard key={program.slug} program={program} />
               ))}

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 
-type Registration = { id: string; registrationNumber: string; name: string; npsn: string; email: string; status: string; createdAt: string; rejectionReason?: string | null };
+type Registration = { id: string; registrationNumber: string; name: string; npsn: string; level: string; foundationName?: string | null; principalName: string; picName: string; picRole: string; email: string; phone: string; address: string; ward: string; district: string; city: string; province: string; website?: string | null; description?: string | null; logoUrl?: string | null; documentUrl?: string | null; status: string; createdAt: string; reviewedAt?: string | null; reviewerId?: string | null; rejectionReason?: string | null };
 type Article = { id: string; title: string; content: string; thumbnailUrl?: string | null; category?: { name: string } | null; status: string; publishedAt?: string | null };
 type Program = { id: string; title: string; description: string; thumbnailUrl?: string | null; category: string; status: string };
 type Training = { id: string; title: string; description: string; thumbnailUrl?: string | null; location: string; startDate: string; quota: number; speaker: string; status: string };
@@ -13,6 +13,8 @@ export default function AdminRegistrations() {
   
   // Registration States
   const [items, setItems] = useState<Registration[]>([]);
+  const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
+  const [decisionLoading, setDecisionLoading] = useState(false);
   const [accounts, setAccounts] = useState<{ id: string; name: string; email: string }[]>([]);
   
   // CRUD Lists
@@ -40,6 +42,7 @@ export default function AdminRegistrations() {
         const resReg = await fetch("/api/admin/registrations");
         const dataReg = await resReg.json();
         if (resReg.ok) setItems(dataReg.data || []);
+        else setMessage(dataReg.message || "Gagal memuat pendaftaran.");
         
         const resUser = await fetch("/api/admin/users");
         const dataUser = await resUser.json();
@@ -69,20 +72,36 @@ export default function AdminRegistrations() {
     return () => clearTimeout(timer);
   }, [loadData]);
 
+  async function openRegistration(id: string) {
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/registrations/${id}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || "Detail pendaftaran gagal dimuat.");
+      setSelectedRegistration(data.data as Registration);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Detail pendaftaran gagal dimuat.");
+    }
+  }
+
   // Deciding school registration
   async function decide(id: string, action: "APPROVE" | "REJECT") {
+    if (decisionLoading) return;
     const rejectionReason = action === "REJECT" ? window.prompt("Alasan penolakan (wajib):") : undefined;
     if (action === "REJECT" && !rejectionReason?.trim()) return;
-    const res = await fetch(`/api/admin/registrations/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(action === "APPROVE" ? { action } : { status: "REJECTED", rejectionReason })
-    });
-    if (!res.ok) {
-      const data = await res.json();
-      setMessage(data.message ?? "Keputusan gagal disimpan.");
-    } else {
+    setDecisionLoading(true);
+    setMessage("");
+    try {
+      const res = await fetch(`/api/admin/registrations/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(action === "APPROVE" ? { action } : { status: "REJECTED", rejectionReason: rejectionReason?.trim() ?? "" }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message ?? "Keputusan gagal disimpan.");
+      setMessage(action === "APPROVE" ? "Pendaftaran berhasil diterima." : "Pendaftaran berhasil ditolak.");
+      setSelectedRegistration(null);
       await loadData();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Keputusan gagal disimpan.");
+    } finally {
+      setDecisionLoading(false);
     }
   }
 
@@ -280,6 +299,7 @@ export default function AdminRegistrations() {
                     <tr>
                       <th className="p-4 font-bold">Pendaftar</th>
                       <th className="p-4 font-bold">NPSN</th>
+                      <th className="p-4 font-bold">Jenjang</th>
                       <th className="p-4 font-bold">Status</th>
                       <th className="p-4 font-bold">Tanggal</th>
                       <th className="p-4 font-bold">Keputusan</th>
@@ -294,6 +314,7 @@ export default function AdminRegistrations() {
                             <p className="text-xs text-slate-500">{item.registrationNumber}</p>
                           </td>
                           <td className="p-4 text-slate-600">{item.npsn}</td>
+                          <td className="p-4 text-slate-600">{item.level}</td>
                           <td className="p-4">
                             <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${
                               item.status === "APPROVED" ? "bg-emerald-100 text-emerald-700" :
@@ -302,6 +323,7 @@ export default function AdminRegistrations() {
                           </td>
                           <td className="p-4 text-slate-500">{new Date(item.createdAt).toLocaleDateString("id-ID")}</td>
                           <td className="p-4">
+                            <button onClick={() => openRegistration(item.id)} className="mb-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100">Lihat Detail</button>
                             {item.status === "PENDING" || item.status === "UNDER_REVIEW" ? (
                               <div className="flex gap-2">
                                 <button onClick={() => decide(item.id, "APPROVE")} className="rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700">Terima</button>
@@ -458,6 +480,17 @@ export default function AdminRegistrations() {
         </>
       )}
 
+      {selectedRegistration && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Detail pendaftaran sekolah">
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-5 shadow-2xl sm:p-7">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-royal">Detail pendaftaran</p><h2 className="mt-1 text-2xl font-bold text-navy-deep">{selectedRegistration.name}</h2><p className="mt-1 text-sm text-slate-500">{selectedRegistration.registrationNumber} · {selectedRegistration.status}</p></div><button onClick={() => setSelectedRegistration(null)} disabled={decisionLoading} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">Tutup</button></div>
+            <div className="grid gap-6 py-5 text-sm sm:grid-cols-2"><DetailGroup title="Informasi lembaga" values={[["NPSN", selectedRegistration.npsn], ["Jenjang", selectedRegistration.level], ["Nama yayasan", selectedRegistration.foundationName], ["Kepala sekolah", selectedRegistration.principalName], ["Tanggal daftar", formatDate(selectedRegistration.createdAt)], ["Tanggal review", selectedRegistration.reviewedAt ? formatDate(selectedRegistration.reviewedAt) : null], ["Reviewer", selectedRegistration.reviewerId]]} /><DetailGroup title="Penanggung jawab" values={[["Nama", selectedRegistration.picName], ["Jabatan", selectedRegistration.picRole], ["Email", selectedRegistration.email], ["Telepon", selectedRegistration.phone]]} /><DetailGroup title="Alamat" values={[["Alamat", selectedRegistration.address], ["Desa/Kelurahan", selectedRegistration.ward], ["Kecamatan", selectedRegistration.district], ["Kota/Kabupaten", selectedRegistration.city], ["Provinsi", selectedRegistration.province]]} /><DetailGroup title="Informasi tambahan" values={[["Website", selectedRegistration.website], ["Deskripsi", selectedRegistration.description], ["Alasan penolakan", selectedRegistration.rejectionReason]]} /></div>
+            {(selectedRegistration.logoUrl || selectedRegistration.documentUrl) && <div className="flex flex-wrap gap-3 border-t border-slate-100 pt-4 text-sm">{selectedRegistration.logoUrl && <a href={selectedRegistration.logoUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-royal hover:underline">Buka logo</a>}{selectedRegistration.documentUrl && <a href={selectedRegistration.documentUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-royal hover:underline">Buka dokumen pendukung</a>}</div>}
+            {(selectedRegistration.status === "PENDING" || selectedRegistration.status === "UNDER_REVIEW") && <div className="mt-6 flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end"><button onClick={() => decide(selectedRegistration.id, "REJECT")} disabled={decisionLoading} className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60">{decisionLoading ? "Memproses..." : "Tolak pendaftaran"}</button><button onClick={() => decide(selectedRegistration.id, "APPROVE")} disabled={decisionLoading} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60">{decisionLoading ? "Memproses..." : "Terima pendaftaran"}</button></div>}
+          </div>
+        </div>
+      )}
+
       {/* CRUD FORM DIALOG MODAL */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-fade-in-up">
@@ -587,3 +620,6 @@ export default function AdminRegistrations() {
     </section>
   );
 }
+
+function formatDate(value: string) { return new Date(value).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" }); }
+function DetailGroup({ title, values }: { title: string; values: Array<[string, string | null | undefined]> }) { return <section><h3 className="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-400">{title}</h3><dl className="space-y-2">{values.filter(([, value]) => value).map(([label, value]) => <div key={label}><dt className="text-slate-500">{label}</dt><dd className="whitespace-pre-wrap font-medium text-slate-800">{value}</dd></div>)}</dl></section>; }

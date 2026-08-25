@@ -87,7 +87,7 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <div className="section-shell py-12 sm:py-16 lg:py-20">
+    <div className="section-shell w-full max-w-full overflow-x-clip py-8 sm:py-16 lg:py-20">
       <Link
         href="/program"
         className="inline-flex items-center gap-2 text-sm font-semibold text-blue-royal transition hover:text-navy-deep"
@@ -96,26 +96,26 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
         Kembali ke Program
       </Link>
 
-      <div className="mt-6 overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
-        <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[3/1]">
+      <div className="mt-5 w-full max-w-full overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm sm:mt-6 sm:rounded-[32px]">
+        <div className="relative h-60 w-full max-w-full sm:h-auto sm:aspect-[16/9] lg:aspect-[3/1]">
           <Image
             src={program.image}
             alt={program.title}
             fill
-            className="object-cover"
+            className="object-cover object-center"
             priority
           />
         </div>
-        <div className="p-6 sm:p-8 lg:p-10">
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="min-w-0 p-5 sm:p-8 lg:p-10">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
             <StatusBadge status={program.status} />
-            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
+            <span className="inline-flex max-w-full items-center gap-2 break-words rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
               <Tag className="h-3.5 w-3.5 text-blue-royal" />
               {program.category}
             </span>
           </div>
 
-          <h1 className="mt-5 text-3xl font-bold tracking-tight text-navy-deep sm:text-4xl">
+          <h1 className="mt-5 max-w-full break-words text-3xl font-bold leading-tight tracking-tight text-navy-deep sm:text-4xl">
             {program.title}
           </h1>
 
@@ -126,27 +126,27 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
             </span>
           </div>
 
-          <p className="mt-6 max-w-3xl text-base leading-8 text-slate-600">
+          <p className="mt-6 max-w-3xl break-words text-base leading-7 text-slate-600 [overflow-wrap:anywhere] sm:leading-8">
             {program.description}
           </p>
 
-          <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6">
+          <div className="mt-8 min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
             <h2 className="text-xl font-bold text-navy-deep">Detail Program</h2>
-            <p className="mt-4 whitespace-pre-line text-base leading-8 text-slate-600">
+            <p className="mt-4 whitespace-pre-line break-words text-base leading-7 text-slate-600 [overflow-wrap:anywhere] sm:leading-8">
               {program.content}
             </p>
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap">
             <Link
               href="/kontak"
-              className="inline-flex items-center justify-center rounded-full bg-navy px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-royal"
+              className="inline-flex w-full items-center justify-center rounded-full bg-navy px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-royal sm:w-auto"
             >
               Hubungi BMPS
             </Link>
             <Link
               href="/program"
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-navy-deep transition hover:bg-blue-light"
+              className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-navy-deep transition hover:bg-blue-light sm:w-auto"
             >
               Lihat Program Lainnya
             </Link>
@@ -155,23 +155,23 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
       </div>
 
       {relatedPrograms.length > 0 && (
-        <div className="mt-16">
+        <div className="mt-12 sm:mt-16">
           <h2 className="text-2xl font-bold text-navy-deep">Program terkait</h2>
-          <div className="mt-6 grid gap-6 md:grid-cols-2">
+          <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
             {relatedPrograms.map((item) => (
               <Link
                 key={item.slug}
                 href={`/program/${item.slug}`}
-                className="soft-panel overflow-hidden p-0"
+                className="soft-panel w-full min-w-0 max-w-full overflow-hidden p-0"
               >
                 <div className="relative aspect-[16/9] w-full">
                   <Image src={item.image} alt={item.title} fill className="object-cover" />
                 </div>
-                <div className="p-5">
+                <div className="min-w-0 p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.12em] text-blue-royal">
                     {item.category}
                   </p>
-                  <h3 className="mt-2 text-xl font-bold text-navy-deep">{item.title}</h3>
+                  <h3 className="mt-2 break-words text-xl font-bold text-navy-deep">{item.title}</h3>
                 </div>
               </Link>
             ))}

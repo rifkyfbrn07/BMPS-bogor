@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 import type { z } from "zod";
 import type { schoolRegistrationSchema } from "@/lib/validation";
 
@@ -7,9 +8,9 @@ type RegistrationInput = z.infer<typeof schoolRegistrationSchema>;
 const clean = (value?: string) => value?.trim() || null;
 const slugify = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-async function uniqueSlug(base: string) {
+async function uniqueSlug(client: Prisma.TransactionClient, base: string) {
   let slug = base || "sekolah"; let suffix = 2;
-  while (await prisma.school.findUnique({ where: { slug }, select: { id: true } })) slug = `${base}-${suffix++}`;
+  while (await client.school.findUnique({ where: { slug }, select: { id: true } })) slug = `${base}-${suffix++}`;
   return slug;
 }
 
@@ -37,7 +38,7 @@ export async function submitRegistration(input: RegistrationInput) {
 }
 
 export async function approveRegistration(registrationId: string, adminId: string) {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const registration = await tx.schoolRegistration.findUnique({ where: { id: registrationId } });
     if (!registration || registration.status === "APPROVED") throw new Error("REGISTRATION_NOT_FOUND");
     const alreadyExists = await tx.school.findUnique({ where: { npsn: registration.npsn } });
@@ -48,7 +49,7 @@ export async function approveRegistration(registrationId: string, adminId: strin
       const foundation = existingFoundation ?? await tx.foundation.create({ data: { name: registration.foundationName, slug: slugify(registration.foundationName) } });
       foundationId = foundation.id;
     }
-    const slug = await uniqueSlug(registration.name);
+    const slug = await uniqueSlug(tx, slugify(registration.name));
     const school = await tx.school.create({ data: { name: registration.name, slug, npsn: registration.npsn, level: registration.level, principalName: registration.principalName, picName: registration.picName, picRole: registration.picRole, email: registration.email, phone: registration.phone, address: registration.address, ward: registration.ward, district: registration.district, city: registration.city, province: registration.province, website: registration.website, description: registration.description, logoUrl: registration.logoUrl, foundationId } });
     const temporaryPassword = crypto.randomUUID();
     const existingUser = await tx.user.findUnique({ where: { email: registration.email } });

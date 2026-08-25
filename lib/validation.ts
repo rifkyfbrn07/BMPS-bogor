@@ -5,9 +5,9 @@ const optionalText = (max: number) => z.string().trim().max(max).optional().or(z
 export const schoolRegistrationSchema = z.object({
   schoolName: z.string().trim().min(2).max(160),
   npsn: z.string().trim().regex(/^\d{8}$/, "NPSN harus terdiri dari 8 digit."),
-  schoolLevel: z.enum(["TK", "SD", "SMP", "SMA", "SMK"]),
+  schoolLevel: z.enum(["TK", "SD", "SMP", "SMA", "SMK", "MI", "MTs", "MA", "OTHER"]),
   foundationName: optionalText(160),
-  principalName: optionalText(120),
+  principalName: z.string().trim().min(2).max(120),
   contactName: z.string().trim().min(2).max(120),
   picPosition: optionalText(100),
   email: z.string().trim().email().max(255),

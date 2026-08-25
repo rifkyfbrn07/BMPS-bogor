@@ -24,8 +24,8 @@
   --color-status-active: #16a34a;
   --color-status-upcoming: #f59e0b;
   --color-status-closed: #dc2626;
-  --font-inter-family: var(--font-inter), "Segoe UI", Arial, Helvetica, sans-serif;
-  --font-plus-jakarta-sans: var(--font-plus-jakarta), "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-inter-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-plus-jakarta-sans: "Segoe UI", Arial, Helvetica, sans-serif;
   --font-primary: var(--font-plus-jakarta-sans);
 }
 
