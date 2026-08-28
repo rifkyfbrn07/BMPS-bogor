@@ -1,35 +1,60 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import FilterButton from "@/components/FilterButton";
 import Pagination from "@/components/Pagination";
 import SchoolCard from "@/components/SchoolCard";
 import SearchBar from "@/components/SearchBar";
 import SectionHeading from "@/components/SectionHeading";
 import { schools } from "@/lib/data/schools";
+import type { School } from "@/lib/types";
 
-const filters = ["Semua", "TK", "SD", "SMP", "SMA", "SMK", "Yayasan"];
+const filters = ["Semua", "TK", "Jenjang SD & MI", "Jenjang SMP & MTs", "Jenjang SMA & SMK", "Yayasan"];
 const itemsPerPage = 6;
 
 export default function SekolahPage() {
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);
+  const [schoolsList, setSchoolsList] = useState<School[]>(schools);
+
+  useEffect(() => {
+    fetch("/api/content/schools")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.data) {
+          setSchoolsList(resData.data);
+        }
+      })
+      .catch((err) => console.error("Gagal memuat sekolah:", err));
+  }, []);
 
   const filteredSchools = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    return schools.filter((school) => {
-      const matchesFilter =
-        activeFilter === "Semua" ||
-        school.level === activeFilter ||
-        (activeFilter === "Yayasan" && school.type === "yayasan");
+    return schoolsList.filter((school) => {
+      let matchesFilter = false;
+      if (activeFilter === "Semua") {
+        matchesFilter = true;
+      } else if (activeFilter === "TK") {
+        matchesFilter = school.level === "TK" || school.level === "OTHER";
+      } else if (activeFilter === "Jenjang SD & MI") {
+        matchesFilter = school.level === "SD" || school.level === "MI";
+      } else if (activeFilter === "Jenjang SMP & MTs") {
+        matchesFilter = school.level === "SMP" || school.level === "MTs";
+      } else if (activeFilter === "Jenjang SMA & SMK") {
+        matchesFilter = school.level === "SMA" || school.level === "SMK" || school.level === "MA";
+      } else if (activeFilter === "Yayasan") {
+        matchesFilter = school.type === "yayasan";
+      }
+
       const matchesSearch =
         normalized.length === 0 ||
         school.name.toLowerCase().includes(normalized) ||
         school.address.toLowerCase().includes(normalized);
+
       return matchesFilter && matchesSearch;
     });
-  }, [query, activeFilter]);
+  }, [query, activeFilter, schoolsList]);
 
   const totalPages = Math.max(1, Math.ceil(filteredSchools.length / itemsPerPage));
   const currentItems = filteredSchools.slice(

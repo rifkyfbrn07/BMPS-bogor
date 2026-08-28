@@ -64,7 +64,7 @@ export default function Footer() {
                 href="/daftar-sekolah" 
                 className="font-display inline-flex h-[44px] items-center justify-center rounded-xl bg-white px-5 text-xs font-bold text-navy-deep transition-all duration-200 hover:bg-slate-100 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-navy-deep"
               >
-                Daftarkan Sekolah & Yayasan
+                Masukan Data Sekolah/Yayasan ke BMPS
               </Link>
             </div>
             

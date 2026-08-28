@@ -18,7 +18,7 @@ export default function RegistrationStatusForm() {
   }
   return <section className="soft-panel p-5 sm:p-8">
     <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-royal">Cek pendaftaran</p>
-    <h2 className="mt-2 text-2xl font-bold text-navy-deep">Menunggu keputusan admin</h2>
+    <h2 className="mt-2 text-2xl font-bold text-navy-deep">Menunggu Approvel Admin</h2>
     <p className="mt-2 text-sm leading-6 text-slate-600">Pendaftaran tidak langsung menjadi anggota. Admin BMPS akan meninjau lalu menerima atau menolak permohonan.</p>
     <form onSubmit={submit} className="mt-5 grid gap-3 sm:grid-cols-2">
       <input required value={registrationNumber} onChange={(e) => setRegistrationNumber(e.target.value)} placeholder="Nomor pendaftaran" className="rounded-xl border border-slate-200 px-3.5 py-3 outline-none focus:border-blue-royal" />

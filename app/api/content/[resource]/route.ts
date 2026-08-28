@@ -101,20 +101,39 @@ export async function GET(
     // 4. Schools Resource
     if (resource === "schools") {
       try {
-        const dbSchools = await prisma.school.findMany({
-          orderBy: { name: "asc" },
+        const dbRegistrations = await prisma.schoolRegistration.findMany({
+          where: { status: "APPROVED" },
+          // Sekolah yang paling baru disetujui (reviewedAt terbaru) tampil lebih dulu.
+          // nulls: "last" menjaga data lama yang belum memiliki reviewedAt tetap di urutan akhir.
+          orderBy: [
+            { reviewedAt: { sort: "desc", nulls: "last" } },
+            { createdAt: "desc" },
+          ],
         });
 
-        if (dbSchools.length > 0) {
-          const mappedSchools = dbSchools.map((item) => ({
-            slug: item.slug,
-            name: item.name,
-            npsn: item.npsn,
-            level: item.level,
-            address: item.address || "",
-            district: item.district,
-            logoUrl: item.logoUrl || "/logo.png",
-          }));
+        if (dbRegistrations.length > 0) {
+          const dbSchools = await prisma.school.findMany({
+            select: { npsn: true, slug: true },
+          });
+          const slugMap = new Map(dbSchools.map((s) => [s.npsn, s.slug]));
+          const slugify = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+          const mappedSchools = dbRegistrations.map((item) => {
+            const slug = slugMap.get(item.npsn) || slugify(item.name);
+            return {
+              slug,
+              name: item.name,
+              type: item.foundationName ? "yayasan" : "sekolah",
+              level: item.level,
+              address: item.address || "",
+              image: item.logoUrl || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1200&auto=format&fit=crop",
+              accreditation: "A",
+              studentCount: 150,
+              description: item.description || "",
+              district: item.district,
+              city: item.city,
+            };
+          });
           return NextResponse.json({ data: mappedSchools });
         }
       } catch (dbErr) {

@@ -20,7 +20,7 @@ export interface School {
   slug: string;
   name: string;
   type: "yayasan" | "sekolah";
-  level: "TK" | "SD" | "SMP" | "SMA" | "SMK";
+  level: "TK" | "SD" | "SMP" | "SMA" | "SMK" | "MI" | "MTs" | "MA" | "OTHER";
   address: string;
   image: string;
   accreditation: string;
