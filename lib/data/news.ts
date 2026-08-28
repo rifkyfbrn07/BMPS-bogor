@@ -7,7 +7,7 @@ export const news: NewsItem[] = [
     category: "Kegiatan",
     date: "2026-06-12",
     image:
-      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop",
+      "/news/news2.png",
     excerpt:
       "BMPS Bogor resmi melantik pengurus baru periode 2026-2030 dengan komitmen memperkuat pendidikan swasta di Bogor.",
     content:
@@ -35,7 +35,7 @@ export const news: NewsItem[] = [
     category: "Beasiswa",
     date: "2026-07-05",
     image:
-      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop",
+      "/news/news1.png",
     excerpt:
       "BMPS Bogor menyalurkan bantuan beasiswa pendidikan tahap pertama kepada 150 siswa dari sekolah anggota.",
     content:

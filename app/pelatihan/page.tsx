@@ -45,7 +45,6 @@ export default function PelatihanPage() {
   return (
     <div className="section-shell py-12 sm:py-16 lg:py-20">
       <SectionHeading
-        eyebrow="Pelatihan"
         title="Pelatihan dan agenda pengembangan pendidikan"
         description="Daftar kegiatan yang dirancang untuk mendukung kemampuan lembaga, guru, dan tenaga pendidikan di lingkungan sekolah swasta."
       />

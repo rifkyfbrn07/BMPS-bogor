@@ -10,33 +10,27 @@ import { schools } from "@/lib/data/schools";
 
 const galleryItems = [
   {
-    image:
-      "https://images.unsplash.com/photo-1513258496099-48168024aec0?q=80&w=900&auto=format&fit=crop",
-    title: "Rapat koordinasi",
+     image: "/7.png",
+    title: "Pelantikan BMPS Komisariat Kab. Bogor",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=900&auto=format&fit=crop",
+    image: "/2.png",
     title: "Pelatihan guru",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=900&auto=format&fit=crop",
-    title: "Kegiatan siswa",
+    image: "/3.png",
+    title: "Rapat Kerja Komisariat (Rakerkom)",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=900&auto=format&fit=crop",
+    image: "/4.png",
     title: "Pembinaan sekolah",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
+    image: "/5.png",
     title: "Kolaborasi pendidikan",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=900&auto=format&fit=crop",
+    image: "/6.png",
     title: "Kegiatan komunitas",
   },
 ];
@@ -243,7 +237,7 @@ export default function Home() {
           <div className="grid gap-6 lg:grid-cols-[45%_55%] lg:items-stretch lg:gap-8">
             <div className="relative aspect-[16/10] w-full max-w-full overflow-hidden rounded-[22px] bg-slate-200 shadow-[0_18px_40px_rgba(15,35,80,0.08)] lg:aspect-auto lg:min-h-full">
               <Image
-                src="/bg.png"
+                src="/8.png"
                 alt="Program BMPS Bogor"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
