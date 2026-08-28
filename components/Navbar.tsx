@@ -96,7 +96,7 @@ export default function Navbar({ authenticated = false, userName, userEmail }: N
           </nav>
 
           <div className="flex shrink-0 items-center gap-2.5">
-            <Link href="/daftar-sekolah" className="font-display inline-flex h-[48px] items-center justify-center rounded-xl bg-[#172033] px-4 text-[11.5px] font-semibold text-white transition-colors hover:bg-[#0f172a]">Daftarkan Sekolah & Yayasan</Link>
+            <Link href="/daftar-sekolah" className="font-display inline-flex h-[48px] items-center justify-center rounded-xl bg-[#172033] px-4 text-[11.5px] font-semibold text-white transition-colors hover:bg-[#0f172a]">Masukan Data Sekolah/Yayasan ke BMPS</Link>
             {authenticated ? <ProfileControl ref={profileRef} open={profileOpen} onToggle={() => setProfileOpen((current) => !current)} onLogout={logout} userName={userName} userEmail={userEmail} /> : <LoginLink />}
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function Navbar({ authenticated = false, userName, userEmail }: N
         <nav className="mx-auto flex max-w-[1280px] flex-col gap-1 px-4 py-3 sm:px-6" aria-label="Navigasi mobile">
           {navLinks.map((link) => <Link key={link.label} href={link.href} onClick={() => setMenuOpen(false)} className={cn("font-ui border-l-2 px-3 py-2.5 text-sm font-semibold tracking-[-0.01em] transition-colors", isActive(link.href) ? "border-[var(--brand-primary)] text-[var(--brand-primary)]" : "border-transparent text-[#172033] hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)]")}>{link.label}</Link>)}
           <div className="mt-3 grid gap-2 border-t border-slate-100 pt-4">
-            <Link href="/daftar-sekolah" onClick={() => setMenuOpen(false)} className="font-display rounded-xl bg-[#172033] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#0f172a]">Daftarkan Sekolah & Yayasan</Link>
+            <Link href="/daftar-sekolah" onClick={() => setMenuOpen(false)} className="font-display rounded-xl bg-[#172033] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#0f172a]">Masukan Data Sekolah/Yayasan ke BMPS</Link>
             {authenticated ? <ProfileControl ref={profileRef} open={profileOpen} onToggle={() => setProfileOpen((current) => !current)} onLogout={logout} userName={userName} userEmail={userEmail} mobile /> : <LoginLink mobile onClick={() => setMenuOpen(false)} />}
           </div>
         </nav>

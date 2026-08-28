@@ -170,7 +170,7 @@ export default function ProfilePage() {
                 href="/daftar-sekolah" 
                 className="font-display inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               >
-                Daftarkan Sekolah
+                Masukan Data Sekolah/Yayasan ke BMPS
               </Link>
             </div>
           </div>
@@ -501,7 +501,7 @@ export default function ProfilePage() {
                 href="/daftar-sekolah" 
                 className="font-display inline-flex h-[48px] items-center justify-center rounded-xl bg-white px-6 text-sm font-bold text-navy-deep transition hover:bg-slate-100"
               >
-                Daftarkan Sekolah & Yayasan
+                Masukan Data Sekolah/Yayasan ke BMPS
               </Link>
               <Link 
                 href="/kontak" 

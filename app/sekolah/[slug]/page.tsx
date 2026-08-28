@@ -3,13 +3,45 @@ import Link from "next/link";
 import { ArrowLeft, MapPin, Users } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getSchoolBySlug, schools } from "@/lib/data/schools";
+import { prisma } from "@/lib/prisma";
+import type { School } from "@/lib/types";
 
 export function generateStaticParams() {
   return schools.map((school) => ({ slug: school.slug }));
 }
 
-export default function SchoolDetailPage({ params }: { params: { slug: string } }) {
-  const school = getSchoolBySlug(params.slug);
+export default async function SchoolDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
+
+  let school: School | null = null;
+
+  try {
+    const dbSchool = await prisma.school.findUnique({
+      where: { slug },
+      include: { foundation: true },
+    });
+
+    if (dbSchool) {
+      school = {
+        slug: dbSchool.slug,
+        name: dbSchool.name,
+        type: dbSchool.foundation ? "yayasan" : "sekolah",
+        level: dbSchool.level,
+        address: dbSchool.address || "",
+        image: dbSchool.logoUrl || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1200&auto=format&fit=crop",
+        accreditation: "A",
+        studentCount: 150,
+        description: dbSchool.description || "Sekolah mitra BMPS Bogor.",
+      };
+    }
+  } catch (error) {
+    console.error("Gagal memuat detail sekolah dari database:", error);
+  }
+
+  if (!school) {
+    school = getSchoolBySlug(slug) ?? null;
+  }
 
   if (!school) {
     notFound();

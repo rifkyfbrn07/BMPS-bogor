@@ -3,10 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import NewsCard from "@/components/NewsCard";
 import { news } from "@/lib/data/news";
 import { schools } from "@/lib/data/schools";
+import FilterButton from "@/components/FilterButton";
+import type { School } from "@/lib/types";
 
 const galleryItems = [
   {
@@ -75,7 +77,30 @@ const programCarouselItems = [
 
 export default function Home() {
   const latestNews = news.slice(0, 3);
-  const featuredSchools = schools.slice(0, 5);
+  const [schoolsList, setSchoolsList] = useState<School[]>(schools);
+  const [selectedLevelTab, setSelectedLevelTab] = useState("Semua");
+
+  useEffect(() => {
+    fetch("/api/content/schools")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.data) {
+          setSchoolsList(resData.data);
+        }
+      })
+      .catch((err) => console.error("Gagal memuat sekolah:", err));
+  }, []);
+
+  const filteredSchools = schoolsList.filter((school) => {
+    if (selectedLevelTab === "Semua") return true;
+    if (selectedLevelTab === "TK") return school.level === "TK" || school.level === "OTHER";
+    if (selectedLevelTab === "Jenjang SD & MI") return school.level === "SD" || school.level === "MI";
+    if (selectedLevelTab === "Jenjang SMP & MTs") return school.level === "SMP" || school.level === "MTs";
+    if (selectedLevelTab === "Jenjang SMA & SMK") return school.level === "SMA" || school.level === "SMK" || school.level === "MA";
+    return false;
+  });
+
+  const levelTabs = ["Semua", "TK", "Jenjang SD & MI", "Jenjang SMP & MTs", "Jenjang SMA & SMK"];
   const [activeProgramIndex, setActiveProgramIndex] = useState(0);
   const mobileProgramTrackRef = useRef<HTMLDivElement>(null);
   const cardWidth = 240;
@@ -132,7 +157,7 @@ export default function Home() {
                   href="/daftar-sekolah"
                   className="group font-display inline-flex items-center justify-center gap-2 rounded-xl border border-white/75 bg-transparent px-5 py-3 text-sm font-semibold text-white transition-[background-color,color,border-color,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-[#172033]"
                 >
-                  Daftarkan Sekolah
+                  Masukan Data Sekolah/Yayasan ke BMPS
                   <ChevronRight className="h-4 w-4 transition-colors duration-200 group-hover:text-[#172033]" aria-hidden="true" />
                 </Link>
                 <Link
@@ -164,47 +189,63 @@ export default function Home() {
                 Temukan sekolah dan yayasan yang tergabung dalam jaringan BMPS
                 Daerah Bogor.
               </p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {levelTabs.map((tab) => (
+                  <FilterButton
+                    key={tab}
+                    label={tab}
+                    active={selectedLevelTab === tab}
+                    onClick={() => setSelectedLevelTab(tab)}
+                  />
+                ))}
+              </div>
             </div>
 
             <div className="overflow-hidden">
-              <div className="touch-scroll scrollbar-hide flex gap-4 overflow-x-auto pb-3 [scrollbar-width:none]">
-                {featuredSchools.map((school) => (
-                  <Link
-                    key={school.slug}
-                    href={`/sekolah/${school.slug}`}
-                    className="group relative min-h-[300px] min-w-[78vw] snap-start overflow-hidden rounded-[16px] border border-slate-200 bg-white shadow-[0_8px_20px_rgba(15,35,80,0.05)] sm:min-h-[320px] sm:min-w-[240px]"
-                  >
-                    <div className="absolute inset-0">
-                      <Image
-                        src={school.image}
-                        alt={school.name}
-                        fill
-                        sizes="(max-width: 768px) 80vw, 32vw"
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 flex h-full flex-col justify-end p-4 sm:p-5">
-                      <div className="mb-3 flex items-center justify-between gap-3">
-                        <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-sm">
-                          {school.level}
-                        </span>
-                        <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-sm">
-                          {school.type === "yayasan" ? "Yayasan" : "Sekolah"}
-                        </span>
+              {filteredSchools.length > 0 ? (
+                <div className="touch-scroll scrollbar-hide flex gap-4 overflow-x-auto pb-3 [scrollbar-width:none]">
+                  {filteredSchools.map((school) => (
+                    <Link
+                      key={school.slug}
+                      href={`/sekolah/${school.slug}`}
+                      className="group relative min-h-[300px] min-w-[78vw] snap-start overflow-hidden rounded-[16px] border border-slate-200 bg-white shadow-[0_8px_20px_rgba(15,35,80,0.05)] sm:min-h-[320px] sm:min-w-[240px]"
+                    >
+                      <div className="absolute inset-0">
+                        <Image
+                          src={school.image}
+                          alt={school.name}
+                          fill
+                          sizes="(max-width: 768px) 80vw, 32vw"
+                          className="object-cover transition duration-500 group-hover:scale-105"
+                        />
                       </div>
-                      <h3 className="text-lg font-bold leading-snug text-white sm:text-xl">
-                        {school.name}
-                      </h3>
-                      <p className="mt-2 text-sm text-slate-200">{school.address}</p>
-                      <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                        Lihat profil
-                        <ChevronRight className="h-4 w-4" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+                      <div className="absolute inset-x-0 bottom-0 flex h-full flex-col justify-end p-4 sm:p-5">
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                          <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-sm">
+                            {school.level}
+                          </span>
+                          <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-sm">
+                            {school.type === "yayasan" ? "Yayasan" : "Sekolah"}
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold leading-snug text-white sm:text-xl">
+                          {school.name}
+                        </h3>
+                        <p className="mt-2 text-sm text-slate-200">{school.address}</p>
+                        <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
+                          Lihat profil
+                          <ChevronRight className="h-4 w-4" />
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-[16px] border border-dashed border-slate-300 p-8 text-center text-slate-500 italic">
+                  Belum ada sekolah terdaftar untuk jenjang ini.
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -460,7 +501,7 @@ export default function Home() {
                     href="/daftar-sekolah"
                     className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[var(--brand-primary)] shadow-[0_10px_20px_rgba(255,255,255,0.14)] transition duration-200 hover:-translate-y-0.5 hover:bg-slate-100"
                   >
-                    Daftarkan Sekolah/Yayasan
+                    Masukan Data Sekolah/Yayasan ke BMPS
                   </Link>
                 </div>
               </div>

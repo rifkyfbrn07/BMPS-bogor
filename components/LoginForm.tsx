@@ -225,7 +225,7 @@ export default function LoginForm() {
         </Link>
 
         <p className="mx-auto mt-4 max-w-xs text-xs leading-5 text-slate-400">
-          Untuk mendaftarkan sekolah atau yayasan, gunakan
+          Untuk memasukan data sekolah atau yayasan ke BMPS, gunakan
           halaman pendaftaran lembaga.
         </p>
       </div>

@@ -8,9 +8,14 @@ type RegistrationInput = z.infer<typeof schoolRegistrationSchema>;
 const clean = (value?: string) => value?.trim() || null;
 const slugify = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-async function uniqueSlug(client: Prisma.TransactionClient, base: string) {
-  let slug = base || "sekolah"; let suffix = 2;
-  while (await client.school.findUnique({ where: { slug }, select: { id: true } })) slug = `${base}-${suffix++}`;
+async function uniqueSlug(client: Prisma.TransactionClient, base: string, model: "school" | "foundation") {
+  const fallback = model === "foundation" ? "yayasan" : "sekolah";
+  const normalizedBase = base || fallback;
+  let slug = normalizedBase; let suffix = 2;
+  const exists = (candidate: string) => model === "foundation"
+    ? client.foundation.findUnique({ where: { slug: candidate }, select: { id: true } })
+    : client.school.findUnique({ where: { slug: candidate }, select: { id: true } });
+  while (await exists(slug)) slug = `${normalizedBase}-${suffix++}`;
   return slug;
 }
 
@@ -45,11 +50,16 @@ export async function approveRegistration(registrationId: string, adminId: strin
     if (alreadyExists) throw new Error("NPSN_REGISTERED");
     let foundationId: string | null = null;
     if (registration.foundationName) {
-      const existingFoundation = await tx.foundation.findFirst({ where: { name: registration.foundationName } });
-      const foundation = existingFoundation ?? await tx.foundation.create({ data: { name: registration.foundationName, slug: slugify(registration.foundationName) } });
+      // Cocokkan yayasan berdasarkan nama persis, lalu berdasarkan slug,
+      // agar variasi kapital/spasi (mis. "YAYASAN UJI COBA" vs "Yayasan Uji Coba")
+      // tidak memicu pelanggaran unique constraint pada Foundation.slug (bug tombol "Terima").
+      const foundationName = registration.foundationName.trim();
+      const existingFoundation = await tx.foundation.findFirst({ where: { name: foundationName } })
+        ?? await tx.foundation.findFirst({ where: { slug: slugify(foundationName) } });
+      const foundation = existingFoundation ?? await tx.foundation.create({ data: { name: foundationName, slug: await uniqueSlug(tx, slugify(foundationName), "foundation") } });
       foundationId = foundation.id;
     }
-    const slug = await uniqueSlug(tx, slugify(registration.name));
+    const slug = await uniqueSlug(tx, slugify(registration.name), "school");
     const school = await tx.school.create({ data: { name: registration.name, slug, npsn: registration.npsn, level: registration.level, principalName: registration.principalName, picName: registration.picName, picRole: registration.picRole, email: registration.email, phone: registration.phone, address: registration.address, ward: registration.ward, district: registration.district, city: registration.city, province: registration.province, website: registration.website, description: registration.description, logoUrl: registration.logoUrl, foundationId } });
     const temporaryPassword = crypto.randomUUID();
     const existingUser = await tx.user.findUnique({ where: { email: registration.email } });

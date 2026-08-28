@@ -302,7 +302,7 @@ export default function AdminRegistrations() {
                       <th className="p-4 font-bold">Jenjang</th>
                       <th className="p-4 font-bold">Status</th>
                       <th className="p-4 font-bold">Tanggal</th>
-                      <th className="p-4 font-bold">Keputusan</th>
+                      <th className="p-4 font-bold">Approvel Admin</th>
                     </tr>
                   </thead>
                   <tbody>
