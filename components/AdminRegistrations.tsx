@@ -1,7 +1,11 @@
 "use client";
+import Image from "next/image";
 import { useEffect, useState, useCallback } from "react";
 
-type Registration = { id: string; registrationNumber: string; name: string; npsn: string; level: string; foundationName?: string | null; principalName: string; picName: string; picRole: string; email: string; phone: string; address: string; ward: string; district: string; city: string; province: string; website?: string | null; description?: string | null; logoUrl?: string | null; documentUrl?: string | null; status: string; createdAt: string; reviewedAt?: string | null; reviewerId?: string | null; rejectionReason?: string | null };
+type Registration = { id: string; registrationNumber: string; name: string; npsn: string; level: string; institutionType?: string | null; foundationName?: string | null; principalName: string; picName: string; picRole: string; email: string; phone: string; address: string; ward: string; district: string; city: string; province: string; postalCode?: string | null; website?: string | null; registrationUrl?: string | null; googleMapsUrl?: string | null; description?: string | null; vision?: string | null; mission?: string | null; logoUrl?: string | null; schoolPhotoUrl?: string | null; documentUrl?: string | null; programs?: string[] | null; status: string; createdAt: string; reviewedAt?: string | null; reviewerId?: string | null; rejectionReason?: string | null };
+
+
+const programLabels: Record<string, string> = { BEASISWA: "Informasi Beasiswa", BANTUAN_PENDIDIKAN: "Bantuan Pendidikan" };
 type Article = { id: string; title: string; content: string; thumbnailUrl?: string | null; category?: { name: string } | null; status: string; publishedAt?: string | null };
 type Program = { id: string; title: string; description: string; thumbnailUrl?: string | null; category: string; status: string };
 type Training = { id: string; title: string; description: string; thumbnailUrl?: string | null; location: string; startDate: string; quota: number; speaker: string; status: string };
@@ -302,7 +306,8 @@ export default function AdminRegistrations() {
                       <th className="p-4 font-bold">Jenjang</th>
                       <th className="p-4 font-bold">Status</th>
                       <th className="p-4 font-bold">Tanggal</th>
-                      <th className="p-4 font-bold">Approvel Admin</th>
+                      <th className="p-4 font-bold">Keputusan Admin</th>
+
                     </tr>
                   </thead>
                   <tbody>
@@ -316,10 +321,17 @@ export default function AdminRegistrations() {
                           <td className="p-4 text-slate-600">{item.npsn}</td>
                           <td className="p-4 text-slate-600">{item.level}</td>
                           <td className="p-4">
-                            <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${
-                              item.status === "APPROVED" ? "bg-emerald-100 text-emerald-700" :
-                              item.status === "REJECTED" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
-                            }`}>{item.status}</span>
+                            <div className="flex items-start gap-2.5">
+                              <span aria-hidden="true" className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${item.status === "APPROVED" ? "bg-emerald-500" : item.status === "REJECTED" ? "bg-red-500" : "bg-amber-400"}`} />
+                              <div>
+                                <p className="text-sm font-semibold text-navy-deep">
+                                  {item.status === "APPROVED" ? "Disetujui" : item.status === "REJECTED" ? "Ditolak" : item.status === "UNDER_REVIEW" ? "Sedang ditinjau" : "Menunggu verifikasi"}
+                                </p>
+                                <p className="mt-0.5 text-xs text-slate-500">
+                                  {item.status === "APPROVED" ? "Keputusan final" : item.status === "REJECTED" ? "Keputusan final" : "Perlu ditindaklanjuti"}
+                                </p>
+                              </div>
+                            </div>
                           </td>
                           <td className="p-4 text-slate-500">{new Date(item.createdAt).toLocaleDateString("id-ID")}</td>
                           <td className="p-4">
@@ -337,7 +349,7 @@ export default function AdminRegistrations() {
                       ))
                     ) : (
                       <tr>
-                        <td className="p-4 text-center text-slate-500 italic" colSpan={5}>Belum ada berkas pendaftaran sekolah terdaftar.</td>
+                        <td className="p-4 text-center text-slate-500 italic" colSpan={6}>Belum ada berkas pendaftaran sekolah terdaftar.</td>
                       </tr>
                     )}
                   </tbody>
@@ -481,10 +493,32 @@ export default function AdminRegistrations() {
       )}
 
       {selectedRegistration && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Detail pendaftaran sekolah">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Detail pendaftaran sekolah">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-5 shadow-2xl sm:p-7">
             <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-royal">Detail pendaftaran</p><h2 className="mt-1 text-2xl font-bold text-navy-deep">{selectedRegistration.name}</h2><p className="mt-1 text-sm text-slate-500">{selectedRegistration.registrationNumber} · {selectedRegistration.status}</p></div><button onClick={() => setSelectedRegistration(null)} disabled={decisionLoading} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">Tutup</button></div>
-            <div className="grid gap-6 py-5 text-sm sm:grid-cols-2"><DetailGroup title="Informasi lembaga" values={[["NPSN", selectedRegistration.npsn], ["Jenjang", selectedRegistration.level], ["Nama yayasan", selectedRegistration.foundationName], ["Kepala sekolah", selectedRegistration.principalName], ["Tanggal daftar", formatDate(selectedRegistration.createdAt)], ["Tanggal review", selectedRegistration.reviewedAt ? formatDate(selectedRegistration.reviewedAt) : null], ["Reviewer", selectedRegistration.reviewerId]]} /><DetailGroup title="Penanggung jawab" values={[["Nama", selectedRegistration.picName], ["Jabatan", selectedRegistration.picRole], ["Email", selectedRegistration.email], ["Telepon", selectedRegistration.phone]]} /><DetailGroup title="Alamat" values={[["Alamat", selectedRegistration.address], ["Desa/Kelurahan", selectedRegistration.ward], ["Kecamatan", selectedRegistration.district], ["Kota/Kabupaten", selectedRegistration.city], ["Provinsi", selectedRegistration.province]]} /><DetailGroup title="Informasi tambahan" values={[["Website", selectedRegistration.website], ["Deskripsi", selectedRegistration.description], ["Alasan penolakan", selectedRegistration.rejectionReason]]} /></div>
+            <div className="grid gap-6 py-5 text-sm sm:grid-cols-2"><DetailGroup title="Data lembaga" values={[["NPSN", selectedRegistration.npsn], ["Jenis lembaga", selectedRegistration.institutionType === "YAYASAN" ? "Yayasan" : selectedRegistration.institutionType === "SEKOLAH" ? "Sekolah" : null], ["Jenjang", selectedRegistration.level], ["Nama yayasan", selectedRegistration.foundationName], ["Kepala sekolah", selectedRegistration.principalName], ["Tanggal daftar", formatDate(selectedRegistration.createdAt)], ["Tanggal review", selectedRegistration.reviewedAt ? formatDate(selectedRegistration.reviewedAt) : null], ["Reviewer", selectedRegistration.reviewerId]]} /><DetailGroup title="Penanggung jawab" values={[["Nama", selectedRegistration.picName], ["Jabatan", selectedRegistration.picRole], ["Email", selectedRegistration.email], ["Telepon", selectedRegistration.phone]]} /><DetailGroup title="Alamat" values={[["Alamat", selectedRegistration.address], ["Desa/Kelurahan", selectedRegistration.ward], ["Kecamatan", selectedRegistration.district], ["Kota/Kabupaten", selectedRegistration.city], ["Provinsi", selectedRegistration.province], ["Kode pos", selectedRegistration.postalCode]]} /><DetailGroup title="Profil lembaga" values={[["Deskripsi", selectedRegistration.description], ["Visi", selectedRegistration.vision], ["Misi", selectedRegistration.mission]]} /><DetailGroup title="Informasi online" values={[["Website", selectedRegistration.website], ["Link pendaftaran", selectedRegistration.registrationUrl], ["Google Maps", selectedRegistration.googleMapsUrl], ["URL logo", selectedRegistration.logoUrl]]} /><DetailGroup title="Keputusan" values={[["Status", selectedRegistration.status], ["Alasan penolakan", selectedRegistration.rejectionReason]]} /></div>
+            <div className="grid gap-6 border-t border-slate-100 pt-4 text-sm sm:grid-cols-2">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Program yang Diikuti</p>
+                {selectedRegistration.programs?.length ? (
+                  <ul className="mt-2 space-y-1.5">
+                    {selectedRegistration.programs.map((program) => (
+                      <li key={program} className="flex items-center gap-2 font-semibold text-emerald-700"><span aria-hidden="true">✓</span>{programLabels[program] ?? program}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 text-sm italic text-slate-500">Tidak memilih program.</p>
+                )}
+              </div>
+              {selectedRegistration.schoolPhotoUrl && (
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Foto Sekolah</p>
+                  <div className="relative mt-2 aspect-[4/3] w-full max-w-[280px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                    <Image src={selectedRegistration.schoolPhotoUrl} alt={`Foto ${selectedRegistration.name}`} fill sizes="280px" className="object-cover" unoptimized />
+                  </div>
+                </div>
+              )}
+            </div>
             {(selectedRegistration.logoUrl || selectedRegistration.documentUrl) && <div className="flex flex-wrap gap-3 border-t border-slate-100 pt-4 text-sm">{selectedRegistration.logoUrl && <a href={selectedRegistration.logoUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-royal hover:underline">Buka logo</a>}{selectedRegistration.documentUrl && <a href={selectedRegistration.documentUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-royal hover:underline">Buka dokumen pendukung</a>}</div>}
             {(selectedRegistration.status === "PENDING" || selectedRegistration.status === "UNDER_REVIEW") && <div className="mt-6 flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end"><button onClick={() => decide(selectedRegistration.id, "REJECT")} disabled={decisionLoading} className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60">{decisionLoading ? "Memproses..." : "Tolak pendaftaran"}</button><button onClick={() => decide(selectedRegistration.id, "APPROVE")} disabled={decisionLoading} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60">{decisionLoading ? "Memproses..." : "Terima pendaftaran"}</button></div>}
           </div>
@@ -493,7 +527,7 @@ export default function AdminRegistrations() {
 
       {/* CRUD FORM DIALOG MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-fade-in-up">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-fade-in-up">
           <div className="w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl overflow-y-auto max-h-[85vh] border border-slate-100">
             <h3 className="font-display text-xl font-bold text-navy-deep border-b border-slate-100 pb-3">
               {modalMode === "create" ? "Tambah Baru" : "Edit Item"}

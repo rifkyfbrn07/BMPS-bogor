@@ -19,14 +19,19 @@ export interface SchoolLevel {
 export interface School {
   slug: string;
   name: string;
+  npsn?: string;
   type: "yayasan" | "sekolah";
   level: "TK" | "SD" | "SMP" | "SMA" | "SMK" | "MI" | "MTs" | "MA" | "OTHER";
   address: string;
+  city?: string;
+  district?: string;
+  ward?: string;
   image: string;
-  accreditation: string;
-  studentCount: number;
+  accreditation?: string;
+  studentCount?: number;
   description: string;
 }
+
 
 export interface NewsItem {
   slug: string;

@@ -7,15 +7,25 @@ import { forwardRef, useEffect, useRef, useState } from "react";
 import { ChevronDown, LayoutDashboard, LogOut, Menu, UserRound, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const navLinks = [
-  { label: "Beranda", href: "/" },
-  { label: "Tentang BMPS", href: "/profile" },
-  { label: "Program", href: "/program" },
-  { label: "Berita", href: "/berita" },
-  { label: "Pelatihan", href: "/pelatihan" },
-  { label: "Bantuan Pendidikan", href: "/program" },
-  { label: "Info Beasiswa", href: "/berita" },
+type NavTier = "primary" | "secondary";
+
+type NavItem = {
+  label: string;
+  href: string;
+  tier: NavTier;
+};
+
+// PRIMARY: halaman utama. SECONDARY: jalur program spesifik (bobot visual lebih ringan).
+const navLinks: NavItem[] = [
+  { label: "Beranda", href: "/", tier: "primary" },
+  { label: "Tentang BMPS", href: "/profile", tier: "primary" },
+  { label: "Program", href: "/program", tier: "primary" },
+  { label: "Berita", href: "/berita", tier: "primary" },
+  { label: "Pelatihan", href: "/pelatihan", tier: "secondary" },
+  { label: "Bantuan Pendidikan", href: "/bantuan-pendidikan", tier: "secondary" },
+  { label: "Info Beasiswa", href: "/info-beasiswa", tier: "secondary" },
 ];
+
 
 type NavbarProps = {
   variant?: "hero" | "solid";
@@ -24,7 +34,7 @@ type NavbarProps = {
   userEmail?: string;
 };
 
-export default function Navbar({ authenticated = false, userName, userEmail }: NavbarProps) {
+export default function Navbar({ variant = "solid", authenticated = false, userName, userEmail }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -60,7 +70,15 @@ export default function Navbar({ authenticated = false, userName, userEmail }: N
     };
   }, [profileOpen]);
 
-  const isActive = (href: string) => href === "/" ? pathname === "/" : pathname === href || (href !== "/profile" && pathname.startsWith(`${href}/`));
+  // Active state dihitung dari pathname (bukan onClick), sehingga tetap benar
+  // untuk direct URL, reload, back/forward, maupun navigasi internal.
+  // Subroute (mis. /berita/[slug], /program/[slug]) tetap membuat parent aktif.
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
+  const activeStates = navLinks.map((link) => isActive(link.href));
+
+  // Di atas hero image navbar memakai varian glass gelap; setelah digulir,
+  // permukaannya berubah menjadi glass terang agar tetap terbaca.
+  const dark = variant === "hero" && !scrolled;
 
   async function logout() {
     setProfileOpen(false);
@@ -70,50 +88,128 @@ export default function Navbar({ authenticated = false, userName, userEmail }: N
     router.refresh();
   }
 
+  // Shell fixed: mengikuti viewport (bukan sticky) — tidak ikut scroll, mengambang
+  // di atas konten, dan tidak menangkap klik. Pointer-events hanya aktif pada
+  // bar & drawer glass, bukan pada shell/dekorasi.
   return (
-    <header className={cn(
-      "sticky top-0 z-50 w-full border-b bg-white transition-[border-color,box-shadow] duration-300 ease-in-out",
-      scrolled
-        ? "border-slate-200 shadow-[0_4px_14px_rgba(15,35,80,0.06)]"
-        : "border-slate-200/80 shadow-[0_2px_10px_rgba(15,35,80,0.04)]"
-    )}>
-      <div className="mx-auto flex min-h-[80px] max-w-[1280px] items-center justify-between gap-4 px-4 sm:min-h-[82px] sm:px-6 lg:px-12">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="BMPS Bogor, Beranda">
-          <span className="flex h-10 w-10 items-center justify-center sm:h-11 sm:w-11">
-            <Image src="/logo.png" alt="Logo BMPS" width={44} height={44} className="h-full w-full object-contain" priority unoptimized />
-          </span>
-          <span className="leading-none text-[#172033]">
-            <span className="font-display block text-[0.82rem] font-bold tracking-[0.12em] sm:text-[0.88rem]">BMPS</span>
-            <span className="mt-1 block text-[0.54rem] font-semibold uppercase tracking-[0.22em] text-slate-500 sm:text-[0.6rem]">Bogor</span>
-          </span>
-        </Link>
+    <header className="navbar-shell">
+      <div
+        className={cn(
+          "glass-navbar pointer-events-auto flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[22px] px-3 py-2 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out sm:min-h-[64px] sm:px-4",
+          dark ? "glass-navbar-dark" : cn("glass-navbar", scrolled && "glass-navbar-scrolled")
+        )}
+      >
+          <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="BMPS Bogor, Beranda">
+            <span className="flex h-9 w-9 items-center justify-center sm:h-10 sm:w-10">
+              <Image src="/logo.png" alt="Logo BMPS" width={40} height={40} className="h-full w-full object-contain" priority unoptimized />
+            </span>
+            <span className={cn("leading-none transition-colors duration-300", dark ? "text-white" : "text-[#172033]")}>
+              <span className="font-display block text-[0.82rem] font-bold tracking-[0.12em] sm:text-[0.88rem]">BMPS</span>
+              <span className={cn("mt-1 block text-[0.54rem] font-semibold uppercase tracking-[0.22em] sm:text-[0.6rem]", dark ? "text-white/70" : "text-slate-500")}>Bogor</span>
+            </span>
+          </Link>
 
-        <div className="ml-auto hidden min-w-0 items-center gap-5 lg:flex xl:gap-7">
-          <nav className="flex items-center gap-4 xl:gap-6" aria-label="Navigasi utama">
-            {navLinks.map((link) => (
-              <Link key={link.label} href={link.href} className={cn("font-display whitespace-nowrap py-2 text-[13px] font-semibold tracking-[-0.01em] text-[#172033] transition-colors duration-200 hover:text-[var(--brand-primary)] xl:text-[13.5px]", isActive(link.href) && "text-[#172033]")}>{link.label}</Link>
-            ))}
+        {/* Cluster desktop (xl+): shrink-0 & tanpa min-w-0 — nav tidak boleh
+            menyusut di bawah lebar kontennya, agar link (whitespace-nowrap)
+            tidak pernah overflow menumpuk area CTA. Di <1280px memakai hamburger. */}
+        <div className="relative z-10 ml-auto hidden shrink-0 items-center gap-5 xl:flex">
+          <nav className="relative z-10 flex shrink-0 items-center" aria-label="Navigasi utama">
+            {navLinks.map((link, index) => {
+              const active = activeStates[index];
+              const showTierDivider = index > 0 && link.tier === "secondary" && navLinks[index - 1].tier === "primary";
+              return (
+                <span key={link.label} className="flex items-center">
+                  {showTierDivider && <span aria-hidden="true" className={cn("mx-2.5 h-4 w-px xl:mx-3.5", dark ? "bg-white/25" : "bg-slate-300/80")} />}
+                  <Link
+                    href={link.href}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "nav-pill whitespace-nowrap px-3 py-1.5",
+                      link.tier === "primary" ? "text-[13px] font-semibold tracking-[-0.01em] xl:text-[13.5px]" : "text-[11.5px] font-medium tracking-[0.01em]",
+                      active
+                        ? dark ? "nav-pill-active-dark" : "nav-pill-active"
+                        : dark
+                          ? "text-white/75 hover:bg-white/10 hover:text-white"
+                          : "text-slate-600 hover:bg-white/70 hover:text-[#172033]"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                </span>
+              );
+            })}
           </nav>
 
           <div className="flex shrink-0 items-center gap-2.5">
-            <Link href="/daftar-sekolah" className="font-display inline-flex h-[48px] items-center justify-center rounded-xl bg-[#172033] px-4 text-[11.5px] font-semibold text-white transition-colors hover:bg-[#0f172a]">Masukan Data Sekolah/Yayasan ke BMPS</Link>
+            <Link
+              href="/daftar-sekolah"
+              className={cn(
+                "font-display inline-flex h-[42px] items-center justify-center rounded-xl px-4 text-[11.5px] font-semibold transition-all duration-200 hover:-translate-y-px",
+                dark
+                  ? "bg-white text-[#172033] shadow-[0_12px_26px_-10px_rgba(2,8,23,0.55)] hover:bg-slate-100"
+                  : "bg-[#172033] text-white shadow-[0_12px_24px_-12px_rgba(11,31,77,0.6)] hover:bg-[#0f172a]"
+              )}
+            >
+              Masukan Data Sekolah/Yayasan ke BMPS
+            </Link>
             {authenticated ? <ProfileControl ref={profileRef} open={profileOpen} onToggle={() => setProfileOpen((current) => !current)} onLogout={logout} userName={userName} userEmail={userEmail} /> : <LoginLink />}
           </div>
         </div>
 
-        <button type="button" aria-label={menuOpen ? "Tutup menu" : "Buka menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((current) => !current)} className="flex h-9 w-9 items-center justify-center rounded-md text-[#172033] ring-1 ring-slate-200 transition hover:bg-slate-50 lg:hidden">
+        <button
+          type="button"
+          aria-label={menuOpen ? "Tutup menu" : "Buka menu"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
+          onClick={() => setMenuOpen((current) => !current)}
+          className={cn(
+            "flex h-9 w-9 items-center justify-center rounded-xl ring-1 transition xl:hidden",
+            dark ? "text-white ring-white/30 hover:bg-white/10" : "text-[#172033] ring-slate-200 hover:bg-white/70"
+          )}
+        >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
-      <div className={cn("border-t border-slate-100 bg-white transition-all duration-200 lg:hidden", menuOpen ? "max-h-[40rem] opacity-100" : "max-h-0 overflow-hidden opacity-0")}>
-        <nav className="mx-auto flex max-w-[1280px] flex-col gap-1 px-4 py-3 sm:px-6" aria-label="Navigasi mobile">
-          {navLinks.map((link) => <Link key={link.label} href={link.href} onClick={() => setMenuOpen(false)} className={cn("font-ui border-l-2 px-3 py-2.5 text-sm font-semibold tracking-[-0.01em] transition-colors", isActive(link.href) ? "border-[var(--brand-primary)] text-[var(--brand-primary)]" : "border-transparent text-[#172033] hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)]")}>{link.label}</Link>)}
-          <div className="mt-3 grid gap-2 border-t border-slate-100 pt-4">
-            <Link href="/daftar-sekolah" onClick={() => setMenuOpen(false)} className="font-display rounded-xl bg-[#172033] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#0f172a]">Masukan Data Sekolah/Yayasan ke BMPS</Link>
-            {authenticated ? <ProfileControl ref={profileRef} open={profileOpen} onToggle={() => setProfileOpen((current) => !current)} onLogout={logout} userName={userName} userEmail={userEmail} mobile /> : <LoginLink mobile onClick={() => setMenuOpen(false)} />}
+      {/* Drawer mobile/tablet (<1280px) — panel glass di bawah bar. Berada di
+          dalam shell fixed sehingga selalu di atas semua konten halaman; saat
+          tertutup `invisible` membuatnya tidak bisa menerima fokus/klik.
+          Tombol menu tetap clickable. Semua link & CTA punya hitbox sendiri
+          (susun vertikal, tanpa absolute overlay). */}
+      <div
+        id="mobile-menu"
+        className={cn(
+          "glass-navbar pointer-events-auto overflow-hidden rounded-[22px] p-2.5 transition-[max-height,opacity,margin-top,visibility] duration-300 ease-out xl:hidden",
+          menuOpen ? "visible mt-2 max-h-[36rem] opacity-100" : "invisible max-h-0 opacity-0"
+        )}
+      >
+        <nav aria-label="Navigasi seluler">
+          <div className="grid gap-0.5">
+            {navLinks.map((link, index) => {
+              const active = activeStates[index];
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  onClick={() => setMenuOpen(false)}
+                  className={cn(
+                    "nav-pill flex items-center justify-between px-3.5 py-2.5",
+                    link.tier === "primary" ? "text-sm font-semibold tracking-[-0.01em]" : "text-[13px] font-medium",
+                    active ? "nav-pill-active" : "text-slate-600 hover:bg-white/70 hover:text-[#172033]"
+                  )}
+                >
+                  {link.label}
+                  {active && <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--brand-primary)]" />}
+                </Link>
+              );
+            })}
           </div>
         </nav>
+        <div className="mt-2 grid gap-2 border-t border-slate-200/70 pt-3">
+          <Link href="/daftar-sekolah" onClick={() => setMenuOpen(false)} className="font-display rounded-xl bg-[#172033] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#0f172a]">Masukan Data Sekolah/Yayasan ke BMPS</Link>
+          {authenticated ? <ProfileControl ref={profileRef} open={profileOpen} onToggle={() => setProfileOpen((current) => !current)} onLogout={logout} userName={userName} userEmail={userEmail} mobile /> : <LoginLink mobile onClick={() => setMenuOpen(false)} />}
+        </div>
       </div>
     </header>
   );

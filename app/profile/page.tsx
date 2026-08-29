@@ -75,7 +75,15 @@ const committeeRoles = [
   { role: "Bidang Pengembangan Program", title: "Workshop & Pengadaan Program Guru" },
 ];
 
+const misiItems = [
+  { id: "01", text: "Menjalin koordinasi dan komunikasi yang aktif antar lembaga pendidikan swasta." },
+  { id: "02", text: "Mendorong pengembangan mutu pembelajaran secara kreatif serta manajemen institusi." },
+  { id: "03", text: "Mengembangkan program sertifikasi dan kompetensi yang relevan dengan kebutuhan pendidikan." },
+  { id: "04", text: "Menjaga semangat kolaboratif untuk mempercepat transformasi pendidikan Bogor." },
+];
+
 export const metadata = {
+
   title: "Tentang Kami - BMPS Bogor",
   description: "Pelajari sejarah, visi, misi, nilai-nilai utama, struktur kepengurusan, dan kontribusi BMPS Bogor dalam mendukung mutu pendidikan sekolah swasta.",
 };
@@ -225,43 +233,30 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-stretch">
-            {/* Visi Column */}
-            <div className="lg:col-span-5 flex flex-col">
-              <div className="flex-1 rounded-[28px] bg-gradient-to-b from-[#102b6b] to-[#0b1f4d] p-8 sm:p-10 text-white shadow-md relative overflow-hidden flex flex-col justify-between">
-                <div className="absolute top-0 right-0 h-40 w-40 bg-white/5 rounded-full blur-3xl" aria-hidden="true" />
-                <div className="space-y-6">
-                  <span className="font-display inline-block rounded-full bg-white/10 px-4 py-1 text-xs font-semibold tracking-wider uppercase text-blue-300">
-                    Visi Utama
-                  </span>
-                  <h3 className="font-display text-2xl font-bold leading-relaxed sm:text-3xl">
-                    &ldquo;Membangun pendidikan swasta yang unggul, relevan, dan berdaya saing.&rdquo;
-                  </h3>
-                </div>
-                <div className="pt-8 border-t border-white/10 mt-6 text-sm text-slate-300">
-                  Menjadi arah pengembangan bagi seluruh kurikulum dan operasional keanggotaan sekolah swasta di Bogor.
-                </div>
-              </div>
+          <div className="mt-14 grid gap-12 lg:mt-20 lg:grid-cols-12 lg:gap-16">
+            {/* VISI — pernyataan besar editorial, tanpa kartu */}
+            <div className="lg:col-span-5">
+              <p className="font-ui text-xs font-bold uppercase tracking-[0.22em] text-blue-royal">Visi</p>
+              <blockquote className="mt-6 font-display text-[1.65rem] font-bold leading-[1.32] tracking-[-0.01em] text-navy-deep sm:text-4xl sm:leading-[1.28]">
+                &ldquo;Membangun pendidikan swasta yang unggul, relevan, dan berdaya saing.&rdquo;
+              </blockquote>
+              <div className="mt-8 h-px w-16 bg-blue-royal/40" aria-hidden="true" />
+              <p className="mt-6 max-w-sm text-sm leading-7 text-slate-500">
+                Menjadi arah pengembangan bagi seluruh kurikulum dan operasional keanggotaan sekolah swasta di Bogor.
+              </p>
             </div>
 
-            {/* Misi Column */}
-            <div className="lg:col-span-7 flex flex-col justify-center">
-              <h4 className="font-display text-xl font-bold text-navy-deep mb-6">
-                Misi Strategis Kerja Kami:
-              </h4>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {[
-                  { id: "01", text: "Menjalin koordinasi dan komunikasi yang aktif antar lembaga pendidikan swasta." },
-                  { id: "02", text: "Mendorong pengembangan mutu pembelajaran secara kreatif serta manajemen institusi." },
-                  { id: "03", text: "Mengembangkan program sertifikasi dan kompetensi yang relevan dengan kebutuhan pendidikan." },
-                  { id: "04", text: "Menjaga semangat kolaboratif untuk mempercepat transformasi pendidikan Bogor." }
-                ].map((misi) => (
-                  <div key={misi.id} className="rounded-2xl border border-slate-200/80 bg-slate-50 p-5 hover:shadow-md transition-all duration-300 hover:bg-white flex gap-4">
-                    <span className="font-display text-lg font-bold text-blue-royal">{misi.id}</span>
-                    <p className="text-sm leading-relaxed text-slate-600 pt-0.5">{misi.text}</p>
-                  </div>
+            {/* MISI — daftar bernomor dengan ritme vertikal */}
+            <div className="lg:col-span-7">
+              <p className="font-ui text-xs font-bold uppercase tracking-[0.22em] text-blue-royal">Misi</p>
+              <ol className="mt-4 border-t border-slate-200/80">
+                {misiItems.map((misi) => (
+                  <li key={misi.id} className="flex gap-6 border-b border-slate-200/80 py-6 sm:gap-8 sm:py-7">
+                    <span aria-hidden="true" className="font-display pt-0.5 text-sm font-bold tabular-nums text-blue-royal/70">{misi.id}</span>
+                    <p className="min-w-0 text-[15px] leading-7 text-slate-700 sm:text-base">{misi.text}</p>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
           </div>
         </div>

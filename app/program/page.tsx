@@ -6,8 +6,9 @@ import SearchBar from "@/components/SearchBar";
 import FilterButton from "@/components/FilterButton";
 import Pagination from "@/components/Pagination";
 import ProgramCard from "@/components/ProgramCard";
+import ProgramSchoolCard from "@/components/ProgramSchoolCard";
 import { programs as staticPrograms } from "@/lib/data/programs";
-import type { Program } from "@/lib/types";
+import type { Program, School } from "@/lib/types";
 
 const itemsPerPage = 6;
 
@@ -16,6 +17,7 @@ export default function ProgramPage() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);
+  const [aidSchools, setAidSchools] = useState<School[]>([]);
 
   useEffect(() => {
     fetch("/api/content/programs")
@@ -24,6 +26,14 @@ export default function ProgramPage() {
         if (data.data) setPrograms(data.data);
       })
       .catch((err) => console.error("Gagal memuat program:", err));
+
+    // Sekolah/yayasan APPROVED yang mendaftar program Bantuan Pendidikan.
+    fetch("/api/content/schools?program=BANTUAN_PENDIDIKAN")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.data)) setAidSchools(data.data);
+      })
+      .catch((err) => console.error("Gagal memuat sekolah peserta bantuan pendidikan:", err));
   }, []);
 
   const categories = useMemo(() => {
@@ -106,6 +116,30 @@ export default function ProgramPage() {
           </div>
         )}
       </div>
+
+      <section className="mt-14 sm:mt-16" aria-labelledby="bantuan-schools-heading">
+        <div className="max-w-2xl">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">Program Bantuan Pendidikan</p>
+          <h2 id="bantuan-schools-heading" className="mt-2 text-2xl font-bold tracking-tight text-navy-deep sm:text-3xl">
+            Sekolah &amp; Yayasan yang Terdaftar
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">
+            Sekolah dan yayasan terverifikasi BMPS Bogor yang mengikuti program Bantuan Pendidikan, diurutkan dari yang paling baru disetujui.
+          </p>
+        </div>
+
+        {aidSchools.length > 0 ? (
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {aidSchools.map((school) => (
+              <ProgramSchoolCard key={school.slug} school={school} />
+            ))}
+          </div>
+        ) : (
+          <div className="soft-panel mt-8 p-8 text-center text-slate-600">
+            Belum ada sekolah atau yayasan terdaftar pada program Bantuan Pendidikan.
+          </div>
+        )}
+      </section>
     </div>
   );
 }

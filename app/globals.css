@@ -69,18 +69,136 @@ h6 {
     scroll-snap-type: x proximity;
   }
 
+  /* Shell navbar: FLOATING + FIXED mengikuti viewport (bukan sticky) —
+     tidak ikut scroll dan tidak menangkap klik (pointer-events none),
+     sehingga tidak ada overlay invisible di atas link manapun.
+
+     <1280px: kapsul memenuhi lebar viewport (inset 12px) + hamburger,
+     karena nav 7 link + CTA penuh butuh ±1175px — jangan dipaksa satu baris.
+     ≥1280px: kapsul melayang fit-content di tengah dengan nav + CTA penuh
+     (muat dengan slack, sehingga tidak ada item yang menyusut/overlap). */
+  .navbar-shell {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  @media (min-width: 1280px) {
+    .navbar-shell {
+      top: 16px;
+      left: 50%;
+      right: auto;
+      width: fit-content;
+      max-width: calc(100vw - 32px);
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Glass navbar terang: translucent surface + inner highlight + subtle shadow. */
   .glass-navbar {
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(14px) saturate(120%);
-    -webkit-backdrop-filter: blur(14px) saturate(120%);
-    border: 1px solid rgba(31, 90, 168, 0.08);
-    box-shadow: 0 12px 28px rgba(15, 35, 80, 0.08);
+    background: rgba(255, 255, 255, 0.66);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      inset 0 -1px 0 rgba(15, 35, 80, 0.04),
+      0 1px 2px rgba(15, 35, 80, 0.05),
+      0 16px 40px -16px rgba(15, 35, 80, 0.16);
+  }
+
+  /* Permukaan glass yang lebih tegas saat halaman digulir:
+     lebih opaque, blur lebih kuat, shadow lebih terlihat. */
+  .glass-navbar-scrolled {
+    background: rgba(255, 255, 255, 0.78);
+    border-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(26px) saturate(190%);
+    -webkit-backdrop-filter: blur(26px) saturate(190%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 2px 4px rgba(15, 35, 80, 0.06),
+      0 20px 44px -18px rgba(15, 35, 80, 0.26);
+  }
+
+  /* Varian gelap: navbar melayang di atas hero image. */
+  .glass-navbar-dark {
+    background: rgba(9, 24, 54, 0.38);
+    border-color: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 16px 40px -16px rgba(2, 8, 23, 0.55);
+  }
+
+  /* Fallback: browser tanpa backdrop-filter tetap punya permukaan solid & terbaca
+     (tidak pernah transparan total). */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-navbar {
+      background: rgba(255, 255, 255, 0.94);
+    }
+    .glass-navbar-scrolled {
+      background: rgba(255, 255, 255, 0.97);
+    }
+    .glass-navbar-dark {
+      background: rgba(9, 24, 54, 0.94);
+    }
   }
 
   .soft-panel {
     @apply rounded-[22px] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,35,80,0.04)];
   }
 }
+
+/* Offset anchor navigation agar tidak tertutup navbar fixed yang mengambang. */
+[id] {
+  scroll-margin-top: 96px;
+}
+
+/* Indikator navigasi aktif — pill kaca + titik kecil (bukan hanya warna). */
+.nav-pill {
+  position: relative;
+  border-radius: 9999px;
+  transition: color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.nav-pill-active {
+  color: var(--navy-deep);
+  background: rgba(23, 78, 166, 0.09);
+  box-shadow:
+    inset 0 0 0 1px rgba(23, 78, 166, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.nav-pill-active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 9999px;
+  background: var(--brand-primary);
+  pointer-events: none; /* dekorasi tidak boleh menangkap klik link */
+}
+
+.nav-pill-active-dark {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.nav-pill-active-dark::after {
+  background: #ffffff;
+  pointer-events: none; /* dekorasi tidak boleh menangkap klik link */
+}
+
 
 
 @keyframes fade-in-up {
