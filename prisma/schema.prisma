@@ -43,6 +43,7 @@ model School {
   npsn            String                @unique
   slug            String                @unique
   level           SchoolLevel
+  institutionType InstitutionType?
   foundationId    String?
   principalName   String?
   picName         String?
@@ -54,9 +55,15 @@ model School {
   ward            String?
   city            String                @default("Bogor")
   province        String                @default("Jawa Barat")
+  postalCode      String?
   website         String?
+  registrationUrl String?
+  googleMapsUrl   String?
   description     String?
+  vision          String?
+  mission         String?
   logoUrl         String?
+  schoolPhotoUrl  String?
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
   aidApplications AidApplication[]
@@ -71,6 +78,7 @@ model SchoolRegistration {
   name               String
   npsn               String             @unique
   level              SchoolLevel
+  institutionType    InstitutionType?
   foundationName     String?
   principalName      String
   picName            String
@@ -82,10 +90,17 @@ model SchoolRegistration {
   ward               String
   city               String             @default("Bogor")
   province           String             @default("Jawa Barat")
+  postalCode         String?
   website            String?
+  registrationUrl    String?
+  googleMapsUrl      String?
   description        String?
+  vision             String?
+  mission            String?
   logoUrl            String?
+  schoolPhotoUrl     String?
   documentUrl        String?
+  programs           ProgramType[]      @default([])
   status             RegistrationStatus @default(PENDING)
   rejectionReason    String?
   reviewerId         String?
@@ -322,6 +337,16 @@ enum SchoolLevel {
   MTs
   MA
   OTHER
+}
+
+enum ProgramType {
+  BEASISWA
+  BANTUAN_PENDIDIKAN
+}
+
+enum InstitutionType {
+  SEKOLAH
+  YAYASAN
 }
 
 model RateLimit {

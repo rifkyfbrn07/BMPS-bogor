@@ -32,10 +32,15 @@ export async function submitRegistration(input: RegistrationInput) {
     try {
       return await prisma.schoolRegistration.create({ data: {
         registrationNumber, name: input.schoolName, npsn, level: input.schoolLevel === "TK" ? "OTHER" : input.schoolLevel,
+        institutionType: input.institutionType ?? null,
         foundationName: clean(input.foundationName), principalName: input.principalName || "Belum diisi", picName: input.contactName,
         picRole: input.picPosition || "Penanggung jawab", email: input.email.toLowerCase(), phone: input.phone, address: input.address,
         ward: input.village || "Belum diisi", district: input.district || "Belum diisi", city: input.city, province: input.province,
-        website: clean(input.website), description: clean(input.description), logoUrl: clean(input.logoUrl), documentUrl: input.documents?.[0],
+        postalCode: clean(input.postalCode),
+        website: clean(input.website), registrationUrl: clean(input.registrationUrl), googleMapsUrl: clean(input.googleMapsUrl),
+        description: clean(input.description), vision: clean(input.vision), mission: clean(input.mission),
+        logoUrl: clean(input.logoUrl), documentUrl: input.documents?.[0],
+        schoolPhotoUrl: clean(input.schoolPhotoUrl), programs: input.programs?.length ? input.programs : [],
       }});
     } catch (error) { if (attempt === 2) throw error; }
   }
@@ -60,7 +65,7 @@ export async function approveRegistration(registrationId: string, adminId: strin
       foundationId = foundation.id;
     }
     const slug = await uniqueSlug(tx, slugify(registration.name), "school");
-    const school = await tx.school.create({ data: { name: registration.name, slug, npsn: registration.npsn, level: registration.level, principalName: registration.principalName, picName: registration.picName, picRole: registration.picRole, email: registration.email, phone: registration.phone, address: registration.address, ward: registration.ward, district: registration.district, city: registration.city, province: registration.province, website: registration.website, description: registration.description, logoUrl: registration.logoUrl, foundationId } });
+    const school = await tx.school.create({ data: { name: registration.name, slug, npsn: registration.npsn, level: registration.level, institutionType: registration.institutionType, principalName: registration.principalName, picName: registration.picName, picRole: registration.picRole, email: registration.email, phone: registration.phone, address: registration.address, ward: registration.ward, district: registration.district, city: registration.city, province: registration.province, postalCode: registration.postalCode, website: registration.website, registrationUrl: registration.registrationUrl, googleMapsUrl: registration.googleMapsUrl, description: registration.description, vision: registration.vision, mission: registration.mission, logoUrl: registration.logoUrl, schoolPhotoUrl: registration.schoolPhotoUrl, foundationId } });
     const temporaryPassword = crypto.randomUUID();
     const existingUser = await tx.user.findUnique({ where: { email: registration.email } });
     if (existingUser) await tx.user.update({ where: { id: existingUser.id }, data: { schoolId: school.id, accountStatus: "APPROVED", reviewedAt: new Date(), rejectionReason: null } });

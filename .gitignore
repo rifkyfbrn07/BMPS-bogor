@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Prisma Client is generated from prisma/schema.prisma.
 /generated/
+
+# local dev upload fallback
+public/uploads/

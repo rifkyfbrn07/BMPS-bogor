@@ -2,10 +2,24 @@ import { z } from "zod";
 
 const optionalText = (max: number) => z.string().trim().max(max).optional().or(z.literal(""));
 
+// URL absolut (https) atau path relatif dari endpoint upload internal ("/uploads/...").
+export const imageUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((value) => value === "" || z.string().url().safeParse(value).success || /^\/[a-zA-Z0-9/._-]+$/.test(value), {
+    message: "URL gambar tidak valid.",
+  });
+
+export const programTypeSchema = z.enum(["BEASISWA", "BANTUAN_PENDIDIKAN"]);
+
+export const institutionTypeSchema = z.enum(["SEKOLAH", "YAYASAN"]);
+
 export const schoolRegistrationSchema = z.object({
   schoolName: z.string().trim().min(2).max(160),
   npsn: z.string().trim().regex(/^\d{8}$/, "NPSN harus terdiri dari 8 digit."),
   schoolLevel: z.enum(["TK", "SD", "SMP", "SMA", "SMK", "MI", "MTs", "MA", "OTHER"]),
+  institutionType: institutionTypeSchema.optional(),
   foundationName: optionalText(160),
   principalName: z.string().trim().min(2).max(120),
   contactName: z.string().trim().min(2).max(120),
@@ -17,10 +31,17 @@ export const schoolRegistrationSchema = z.object({
   district: optionalText(120),
   city: z.string().trim().min(2).max(120).default("Bogor"),
   province: z.string().trim().min(2).max(120).default("Jawa Barat"),
+  postalCode: optionalText(10),
   website: z.string().trim().url().max(255).optional().or(z.literal("")),
+  registrationUrl: z.string().trim().url().max(500).optional().or(z.literal("")),
+  googleMapsUrl: z.string().trim().url().max(500).optional().or(z.literal("")),
   description: optionalText(2000),
+  vision: optionalText(2000),
+  mission: optionalText(2000),
   logoUrl: z.string().trim().url().max(500).optional().or(z.literal("")),
+  schoolPhotoUrl: imageUrlSchema.optional().or(z.literal("")),
   documents: z.array(z.string().url().max(500)).max(10).optional(),
+  programs: z.array(programTypeSchema).max(2).optional(),
 });
 
 export const loginSchema = z.object({

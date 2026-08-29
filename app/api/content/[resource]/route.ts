@@ -99,10 +99,19 @@ export async function GET(
     }
 
     // 4. Schools Resource
+    // Query param opsional: ?program=BEASISWA | ?program=BANTUAN_PENDIDIKAN
+    // Status selalu dipaksa APPROVED di server — parameter status publik tidak diproses.
     if (resource === "schools") {
       try {
+        const programParam = new URL(_request.url).searchParams.get("program");
+        if (programParam && programParam !== "BEASISWA" && programParam !== "BANTUAN_PENDIDIKAN") {
+          return NextResponse.json({ message: "Program tidak valid." }, { status: 400 });
+        }
         const dbRegistrations = await prisma.schoolRegistration.findMany({
-          where: { status: "APPROVED" },
+          where: {
+            status: "APPROVED",
+            ...(programParam ? { programs: { has: programParam as "BEASISWA" | "BANTUAN_PENDIDIKAN" } } : {}),
+          },
           // Sekolah yang paling baru disetujui (reviewedAt terbaru) tampil lebih dulu.
           // nulls: "last" menjaga data lama yang belum memiliki reviewedAt tetap di urutan akhir.
           orderBy: [
@@ -120,24 +129,31 @@ export async function GET(
 
           const mappedSchools = dbRegistrations.map((item) => {
             const slug = slugMap.get(item.npsn) || slugify(item.name);
+            // Nilai "Belum diisi" dari service pendaftaran tidak ditampilkan publik.
+            const publicText = (value?: string | null) => (value && value !== "Belum diisi" ? value : "");
             return {
               slug,
               name: item.name,
-              type: item.foundationName ? "yayasan" : "sekolah",
+              npsn: item.npsn,
+              type: item.institutionType === "YAYASAN" || item.foundationName ? "yayasan" : "sekolah",
               level: item.level,
-              address: item.address || "",
-              image: item.logoUrl || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1200&auto=format&fit=crop",
-              accreditation: "A",
-              studentCount: 150,
+              address: publicText(item.address),
+              // Utamakan foto sekolah hasil unggahan pendaftar, lalu logo, lalu fallback.
+              image: item.schoolPhotoUrl || item.logoUrl || "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1200&auto=format&fit=crop",
               description: item.description || "",
-              district: item.district,
+              ward: publicText(item.ward),
+              district: publicText(item.district),
               city: item.city,
             };
           });
+
           return NextResponse.json({ data: mappedSchools });
         }
+        // Dengan filter program, data statis (tanpa info program) tidak boleh dipakai sebagai fallback.
+        if (programParam) return NextResponse.json({ data: [] });
       } catch (dbErr) {
         console.warn("DB fetch failed for schools, falling back to static:", dbErr);
+        if (new URL(_request.url).searchParams.get("program")) return NextResponse.json({ data: [] });
       }
       return NextResponse.json({ data: staticSchools });
     }

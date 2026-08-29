@@ -4,10 +4,16 @@ import SiteChrome from "@/components/SiteChrome";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "BMPS Bogor",
   description: "Website resmi BMPS Bogor",
 };
+
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();

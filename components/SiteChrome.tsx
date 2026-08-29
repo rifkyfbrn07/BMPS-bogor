@@ -22,6 +22,9 @@ export default function SiteChrome({
   return (
     <>
       {!isAuthPage && <Navbar variant={isHeroPage || isProfileHero ? "hero" : "solid"} authenticated={authenticated} userName={userName} userEmail={userEmail} />}
+      {/* Navbar kini fixed (mengambang) sehingga tidak lagi memakan ruang layout.
+          Halaman non-hero butuh offset agar konten atas tidak tertutup navbar. */}
+      {!isAuthPage && !isHeroPage && !isProfileHero && <div aria-hidden="true" className="h-[80px] lg:h-[92px]" />}
       <main className={isAuthPage ? "flex-1" : "flex-1"}>{children}</main>
       {!isAuthPage && <Footer />}
     </>

@@ -3,10 +3,11 @@
 import { useMemo, useState, useEffect } from "react";
 import NewsCard from "@/components/NewsCard";
 import Pagination from "@/components/Pagination";
+import ProgramSchoolCard from "@/components/ProgramSchoolCard";
 import SearchBar from "@/components/SearchBar";
 import SectionHeading from "@/components/SectionHeading";
 import { news as staticNews } from "@/lib/data/news";
-import type { NewsItem } from "@/lib/types";
+import type { NewsItem, School } from "@/lib/types";
 
 const itemsPerPage = 6;
 
@@ -15,6 +16,7 @@ export default function BeritaPage() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);
+  const [programSchools, setProgramSchools] = useState<School[]>([]);
 
   useEffect(() => {
     fetch("/api/content/news")
@@ -23,6 +25,14 @@ export default function BeritaPage() {
         if (data.data) setNews(data.data);
       })
       .catch((err) => console.error("Gagal memuat berita:", err));
+
+    // Sekolah/yayasan APPROVED yang mendaftar program Informasi Beasiswa.
+    fetch("/api/content/schools?program=BEASISWA")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.data)) setProgramSchools(data.data);
+      })
+      .catch((err) => console.error("Gagal memuat sekolah peserta beasiswa:", err));
   }, []);
 
   const categories = useMemo(() => {
@@ -111,6 +121,30 @@ export default function BeritaPage() {
           </div>
         )}
       </div>
+
+      <section className="mt-14 sm:mt-16" aria-labelledby="beasiswa-schools-heading">
+        <div className="max-w-2xl">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">Program Beasiswa</p>
+          <h2 id="beasiswa-schools-heading" className="mt-2 text-2xl font-bold tracking-tight text-navy-deep sm:text-3xl">
+            Sekolah &amp; Yayasan yang Terdaftar
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">
+            Sekolah dan yayasan terverifikasi BMPS Bogor yang mengikuti program Informasi Beasiswa, diurutkan dari yang paling baru disetujui.
+          </p>
+        </div>
+
+        {programSchools.length > 0 ? (
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {programSchools.map((school) => (
+              <ProgramSchoolCard key={school.slug} school={school} />
+            ))}
+          </div>
+        ) : (
+          <div className="soft-panel mt-8 p-8 text-center text-slate-600">
+            Belum ada sekolah atau yayasan terdaftar pada program Informasi Beasiswa.
+          </div>
+        )}
+      </section>
     </div>
   );
 }
