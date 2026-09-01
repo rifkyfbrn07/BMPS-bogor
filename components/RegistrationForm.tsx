@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { 
@@ -82,6 +83,31 @@ export default function RegistrationForm() {
   // Popup Modal Success State
   const [successReceipt, setSuccessReceipt] = useState<SuccessReceipt | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Kunci Scroll Body Saat Pop-up Terbuka (Mencegah Halaman di Balik Pop-up Ter-scroll)
+  useEffect(() => {
+    if (successReceipt) {
+      const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+      
+      document.body.style.overflow = "hidden";
+      if (scrollBarWidth > 0) {
+        document.body.style.paddingRight = `${scrollBarWidth}px`;
+      }
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setSuccessReceipt(null);
+      };
+      window.addEventListener("keydown", handleKeyDown);
+
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [successReceipt]);
 
   const update = (field: keyof typeof form, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -240,7 +266,7 @@ export default function RegistrationForm() {
 
       const regNumber = result.registrationNumber || "BMB-2026-TERDAFTAR";
       
-      // Buka Pop-up Bukti Pendaftaran / Receipt
+      // Buka Pop-up Bukti Pendaftaran / Receipt (Modal Portal)
       setSuccessReceipt({
         registrationNumber: regNumber,
         schoolName: payload.schoolName,
@@ -683,15 +709,18 @@ export default function RegistrationForm() {
       </form>
 
       {/* ============================================================ */}
-      {/* SUCCESS POPUP RECEIPT (TOP-UP STYLE NOTIFICATION) */}
+      {/* SUCCESS POPUP RECEIPT (FULL PORTAL + BODY SCROLL LOCK + TOP-OF-ALL Z-INDEX) */}
       {/* ============================================================ */}
-      {successReceipt && (
+      {typeof document !== "undefined" && successReceipt && createPortal(
         <div 
-          className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-[999999] w-screen h-screen flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-950/85 backdrop-blur-xl animate-fade-in"
           role="dialog"
           aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSuccessReceipt(null);
+          }}
         >
-          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100 animate-scale-up">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100 animate-scale-up my-auto z-10">
             {/* Close button */}
             <button 
               onClick={() => setSuccessReceipt(null)}
@@ -806,7 +835,8 @@ export default function RegistrationForm() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
