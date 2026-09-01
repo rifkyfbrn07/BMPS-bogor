@@ -79,27 +79,41 @@ export default function ProgramExplorer() {
 
     const context = gsap.context(() => {
       gsap.from("[data-reveal='heading']", {
+        y: 28,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: root,
+          start: "top 80%",
+          once: true,
+        },
+      });
+
+      gsap.from("[data-reveal='row']", {
         y: 26,
         opacity: 0,
-        duration: 0.7,
-        ease: "power2.out",
-        scrollTrigger: { trigger: root, start: "top 78%" },
+        duration: 0.65,
+        ease: "power3.out",
+        stagger: 0.09,
+        scrollTrigger: {
+          trigger: "[data-reveal='list']",
+          start: "top 82%",
+          once: true,
+        },
       });
-      gsap.from("[data-reveal='row']", {
-        y: 22,
-        opacity: 0,
-        duration: 0.55,
-        ease: "power2.out",
-        stagger: 0.08,
-        scrollTrigger: { trigger: "[data-reveal='list']", start: "top 82%" },
-      });
+
       gsap.from("[data-reveal='aside']", {
         y: 24,
         opacity: 0,
-        duration: 0.7,
-        ease: "power2.out",
-        delay: 0.15,
-        scrollTrigger: { trigger: root, start: "top 70%" },
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.1,
+        scrollTrigger: {
+          trigger: root,
+          start: "top 75%",
+          once: true,
+        },
       });
     }, root);
 
@@ -107,7 +121,7 @@ export default function ProgramExplorer() {
   }, []);
 
   return (
-    <section ref={rootRef} aria-labelledby="program-bmps-heading" className="bg-[#f3f7fd] py-16 sm:py-20 lg:py-28">
+    <section ref={rootRef} aria-labelledby="program-bmps-heading" className="bg-[#f4f7fc] py-16 sm:py-20 lg:py-28">
       <div className="section-shell w-full max-w-full overflow-x-clip">
         {/* ---- Heading section ---- */}
         <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
@@ -129,8 +143,8 @@ export default function ProgramExplorer() {
           </div>
 
           <div data-reveal="aside" className="hidden lg:block">
-            <div className="relative aspect-[4/3] w-[240px] overflow-hidden rounded-[20px] border border-white shadow-[0_24px_50px_-24px_rgba(15,35,80,0.35)]">
-              <Image src="/8.png" alt="Kegiatan program BMPS Bogor" fill sizes="240px" className="object-cover" />
+            <div className="relative aspect-[4/3] w-[240px] overflow-hidden rounded-[20px] border border-white bg-slate-100 shadow-[0_24px_50px_-24px_rgba(15,35,80,0.35)]">
+              <Image src="/8.png" alt="Kegiatan program BMPS Bogor" fill sizes="240px" className="object-cover transition-transform duration-700 hover:scale-105" />
             </div>
           </div>
         </div>
@@ -142,7 +156,7 @@ export default function ProgramExplorer() {
             const number = String(index + 1).padStart(2, "0");
             return (
               <li key={program.slug} data-reveal="row" className="border-b border-slate-200/90">
-                <div className={cn("transition-colors duration-300", open ? "bg-white/70" : "hover:bg-white/40")}>
+                <div className={cn("group rounded-xl transition-all duration-300", open ? "bg-white/90 shadow-sm" : "hover:bg-white/50")}>
                   <button
                     type="button"
                     onClick={() => setActiveIndex(index)}
@@ -153,27 +167,29 @@ export default function ProgramExplorer() {
                     <span
                       aria-hidden="true"
                       className={cn(
-                        "font-display text-lg font-bold tabular-nums transition-colors duration-300 sm:text-xl",
-                        open ? "text-blue-royal" : "text-slate-300"
+                        "font-display text-lg font-bold tabular-nums transition-all duration-300 group-hover:translate-x-1 sm:text-xl",
+                        open ? "text-blue-royal font-extrabold" : "text-slate-400 group-hover:text-blue-royal/70"
                       )}
                     >
                       {number}
                     </span>
                     <span
                       className={cn(
-                        "font-display min-w-0 break-words text-[1.15rem] font-semibold leading-snug tracking-[-0.01em] transition-colors duration-300 sm:text-[1.45rem]",
-                        open ? "text-navy-deep" : "text-slate-700"
+                        "font-display min-w-0 break-words text-[1.15rem] font-semibold leading-snug tracking-[-0.01em] transition-all duration-300 group-hover:translate-x-1.5 sm:text-[1.45rem]",
+                        open ? "text-navy-deep" : "text-slate-700 group-hover:text-navy-deep"
                       )}
                     >
                       {program.title}
                     </span>
                     <span className="col-start-3 hidden items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 sm:flex">
-                      {program.category}
+                      <span className="rounded-full bg-slate-100/90 px-2.5 py-0.5 transition-colors group-hover:bg-blue-50 group-hover:text-blue-royal">
+                        {program.category}
+                      </span>
                       <ArrowUpRight
                         aria-hidden="true"
                         className={cn(
                           "h-4 w-4 transition-all duration-300",
-                          open ? "translate-x-0 text-blue-royal opacity-100" : "-translate-x-1 text-slate-300 opacity-70"
+                          open ? "translate-x-1 text-blue-royal opacity-100" : "-translate-x-0.5 text-slate-400 opacity-70 group-hover:translate-x-1 group-hover:text-blue-royal group-hover:opacity-100"
                         )}
                       />
                     </span>
@@ -189,11 +205,11 @@ export default function ProgramExplorer() {
                   >
                     <div className="overflow-hidden">
                       <div className="pb-7 pl-[4.25rem] pr-3 sm:pb-8 sm:pl-[6.25rem] sm:pr-5">
-                        <div className="min-w-0 border-l-2 border-blue-royal/25 pl-5">
-                          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-royal/80">
+                        <div className="min-w-0 border-l-2 border-blue-royal/30 pl-5">
+                          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-royal">
                             {program.statusLabel}
                             <span className="mx-2 text-slate-300" aria-hidden="true">·</span>
-                            <span className="text-slate-400">{program.category}</span>
+                            <span className="text-slate-500 font-semibold">{program.category}</span>
                           </p>
                           <p className="mt-2.5 max-w-2xl text-[15px] leading-7 text-slate-600">
                             {program.description}
@@ -206,7 +222,7 @@ export default function ProgramExplorer() {
                               Lihat detail program
                             </span>
                             <ArrowRight
-                              className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1"
+                              className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1.5"
                               aria-hidden="true"
                             />
                           </Link>
@@ -221,11 +237,11 @@ export default function ProgramExplorer() {
         </ol>
 
         <div data-reveal="row" className="mt-8 flex justify-center sm:mt-10">
-          <Link href="/program" className="group/link inline-flex items-center gap-2 text-sm font-semibold text-blue-royal">
-            <span className="border-b border-transparent pb-0.5 transition-[border-color,transform] duration-300 group-hover/link:border-blue-royal group-hover/link:translate-x-0.5">
+          <Link href="/program" className="btn-editorial group/link inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-blue-royal shadow-sm ring-1 ring-slate-200/80 hover:bg-blue-50">
+            <span className="pb-0.5">
               Jelajahi seluruh program BMPS
             </span>
-            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1" aria-hidden="true" />
+            <ArrowRight className="btn-icon h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
 

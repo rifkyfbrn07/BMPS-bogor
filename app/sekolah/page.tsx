@@ -17,6 +17,7 @@ export default function SekolahPage() {
   const [activeFilter, setActiveFilter] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);
   const [schoolsList, setSchoolsList] = useState<School[]>(schools);
+  const [filterTransitioning, setFilterTransitioning] = useState(false);
 
   useEffect(() => {
     fetch("/api/content/schools")
@@ -28,6 +29,16 @@ export default function SekolahPage() {
       })
       .catch((err) => console.error("Gagal memuat sekolah:", err));
   }, []);
+
+  const handleFilterChange = (filter: string) => {
+    if (filter === activeFilter) return;
+    setFilterTransitioning(true);
+    setTimeout(() => {
+      setActiveFilter(filter);
+      setCurrentPage(1);
+      setFilterTransitioning(false);
+    }, 120);
+  };
 
   const filteredSchools = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -88,10 +99,7 @@ export default function SekolahPage() {
               key={filter}
               label={filter}
               active={activeFilter === filter}
-              onClick={() => {
-                setActiveFilter(filter);
-                setCurrentPage(1);
-              }}
+              onClick={() => handleFilterChange(filter)}
             />
           ))}
         </div>
@@ -100,7 +108,7 @@ export default function SekolahPage() {
       <div className="mt-8">
         {currentItems.length > 0 ? (
           <>
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className={`grid gap-6 md:grid-cols-2 xl:grid-cols-3 transition-opacity duration-200 ease-out ${filterTransitioning ? "opacity-40" : "opacity-100"}`}>
               {currentItems.map((school) => (
                 <SchoolCard key={school.slug} school={school} />
               ))}

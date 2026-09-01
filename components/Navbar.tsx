@@ -95,11 +95,13 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
     <header className="navbar-shell">
       <div
         className={cn(
-          "glass-navbar pointer-events-auto flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[22px] px-3 py-2 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out sm:min-h-[64px] sm:px-4",
+          "glass-navbar pointer-events-auto flex min-h-[58px] w-full items-center justify-between gap-3 rounded-[22px] px-3.5 py-2 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out sm:min-h-[64px] sm:px-5 sm:py-2.5",
           dark ? "glass-navbar-dark" : cn("glass-navbar", scrolled && "glass-navbar-scrolled")
         )}
       >
-          <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="BMPS Bogor, Beranda">
+        {/* 1. Logo (flex-shrink: 0) */}
+        <div className="navbar-logo flex shrink-0 items-center">
+          <Link href="/" className="flex items-center gap-2.5" aria-label="BMPS Bogor, Beranda">
             <span className="flex h-9 w-9 items-center justify-center sm:h-10 sm:w-10">
               <Image src="/logo.png" alt="Logo BMPS" width={40} height={40} className="h-full w-full object-contain" priority unoptimized />
             </span>
@@ -108,29 +110,41 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
               <span className={cn("mt-1 block text-[0.54rem] font-semibold uppercase tracking-[0.22em] sm:text-[0.6rem]", dark ? "text-white/70" : "text-slate-500")}>Bogor</span>
             </span>
           </Link>
+        </div>
 
-        {/* Cluster desktop (xl+): shrink-0 & tanpa min-w-0 — nav tidak boleh
-            menyusut di bawah lebar kontennya, agar link (whitespace-nowrap)
-            tidak pernah overflow menumpuk area CTA. Di <1280px memakai hamburger. */}
-        <div className="relative z-10 ml-auto hidden shrink-0 items-center gap-5 xl:flex">
-          <nav className="relative z-10 flex shrink-0 items-center" aria-label="Navigasi utama">
+        {/* 2. Navigation Links (flex: 1, centered, inside Liquid Glass) */}
+        <nav className="navbar-links hidden flex-1 items-center justify-center min-w-0 px-2 xl:flex" aria-label="Navigasi utama">
+          <div className="flex items-center gap-0.5 2xl:gap-1">
             {navLinks.map((link, index) => {
               const active = activeStates[index];
               const showTierDivider = index > 0 && link.tier === "secondary" && navLinks[index - 1].tier === "primary";
               return (
                 <span key={link.label} className="flex items-center">
-                  {showTierDivider && <span aria-hidden="true" className={cn("mx-2.5 h-4 w-px xl:mx-3.5", dark ? "bg-white/25" : "bg-slate-300/80")} />}
+                  {showTierDivider && (
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "mx-1.5 h-3.5 w-px transition-colors duration-300 2xl:mx-2.5",
+                        dark ? "bg-white/20" : "bg-slate-300/80"
+                      )}
+                    />
+                  )}
                   <Link
                     href={link.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "nav-pill whitespace-nowrap px-3 py-1.5",
-                      link.tier === "primary" ? "text-[13px] font-semibold tracking-[-0.01em] xl:text-[13.5px]" : "text-[11.5px] font-medium tracking-[0.01em]",
+                      "nav-pill relative whitespace-nowrap transition-all duration-250 ease-out hover:scale-[1.02]",
+                      "px-2.5 py-1.5 text-[12px] 2xl:px-3.5 2xl:text-[13px]",
+                      link.tier === "primary"
+                        ? "font-semibold tracking-[-0.01em]"
+                        : "font-medium tracking-[0.01em]",
                       active
-                        ? dark ? "nav-pill-active-dark" : "nav-pill-active"
+                        ? dark
+                          ? "nav-pill-active-dark"
+                          : "nav-pill-active"
                         : dark
-                          ? "text-white/75 hover:bg-white/10 hover:text-white"
-                          : "text-slate-600 hover:bg-white/70 hover:text-[#172033]"
+                          ? "text-white/80 hover:bg-white/12 hover:text-white"
+                          : "text-slate-600 hover:bg-slate-900/5 hover:text-[#172033]"
                     )}
                   >
                     {link.label}
@@ -138,24 +152,37 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
                 </span>
               );
             })}
-          </nav>
-
-          <div className="flex shrink-0 items-center gap-2.5">
-            <Link
-              href="/daftar-sekolah"
-              className={cn(
-                "font-display inline-flex h-[42px] items-center justify-center rounded-xl px-4 text-[11.5px] font-semibold transition-all duration-200 hover:-translate-y-px",
-                dark
-                  ? "bg-white text-[#172033] shadow-[0_12px_26px_-10px_rgba(2,8,23,0.55)] hover:bg-slate-100"
-                  : "bg-[#172033] text-white shadow-[0_12px_24px_-12px_rgba(11,31,77,0.6)] hover:bg-[#0f172a]"
-              )}
-            >
-              Masukan Data Sekolah/Yayasan ke BMPS
-            </Link>
-            {authenticated ? <ProfileControl ref={profileRef} open={profileOpen} onToggle={() => setProfileOpen((current) => !current)} onLogout={logout} userName={userName} userEmail={userEmail} /> : <LoginLink />}
           </div>
+        </nav>
+
+        {/* 3. Actions: CTA & Login (flex-shrink: 0, inside Liquid Glass) */}
+        <div className="navbar-actions hidden shrink-0 items-center gap-2 xl:flex 2xl:gap-3">
+          <Link
+            href="/daftar-sekolah"
+            className={cn(
+              "btn-editorial font-display inline-flex h-[38px] items-center justify-center whitespace-nowrap rounded-xl px-3.5 text-[11.5px] font-semibold shadow-sm transition-all duration-250 ease-out hover:-translate-y-0.5 2xl:h-[40px] 2xl:px-4 2xl:text-[12px]",
+              dark
+                ? "bg-white text-[#172033] shadow-[0_10px_24px_-10px_rgba(2,8,23,0.55)] hover:bg-slate-100 hover:shadow-[0_14px_28px_-10px_rgba(2,8,23,0.65)]"
+                : "bg-[#172033] text-white shadow-[0_10px_22px_-10px_rgba(11,31,77,0.5)] hover:bg-[#0f172a] hover:shadow-[0_14px_26px_-10px_rgba(11,31,77,0.6)]"
+            )}
+          >
+            Masukan Data Sekolah/Yayasan ke BMPS
+          </Link>
+          {authenticated ? (
+            <ProfileControl
+              ref={profileRef}
+              open={profileOpen}
+              onToggle={() => setProfileOpen((current) => !current)}
+              onLogout={logout}
+              userName={userName}
+              userEmail={userEmail}
+            />
+          ) : (
+            <LoginLink />
+          )}
         </div>
 
+        {/* 4. Mobile Hamburger Button */}
         <button
           type="button"
           aria-label={menuOpen ? "Tutup menu" : "Buka menu"}
@@ -171,11 +198,7 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
         </button>
       </div>
 
-      {/* Drawer mobile/tablet (<1280px) — panel glass di bawah bar. Berada di
-          dalam shell fixed sehingga selalu di atas semua konten halaman; saat
-          tertutup `invisible` membuatnya tidak bisa menerima fokus/klik.
-          Tombol menu tetap clickable. Semua link & CTA punya hitbox sendiri
-          (susun vertikal, tanpa absolute overlay). */}
+      {/* Drawer mobile/tablet (<1280px) — panel glass di bawah bar. */}
       <div
         id="mobile-menu"
         className={cn(
@@ -216,14 +239,34 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
 }
 
 function LoginLink({ mobile = false, onClick }: { mobile?: boolean; onClick?: () => void }) {
-  return <Link href="/login" onClick={onClick} className={cn("font-display inline-flex items-center justify-center rounded-xl bg-[#172033] font-semibold text-white transition-colors hover:bg-[#0f172a]", mobile ? "px-4 py-3 text-sm" : "h-[48px] px-4 text-[12px]")}>Login</Link>;
+  return (
+    <Link
+      href="/login"
+      onClick={onClick}
+      className={cn(
+        "btn-editorial font-display inline-flex items-center justify-center whitespace-nowrap rounded-xl bg-[#172033] font-semibold text-white transition-colors hover:bg-[#0f172a]",
+        mobile ? "px-4 py-3 text-sm" : "h-[38px] px-3.5 text-[11.5px] 2xl:h-[40px] 2xl:px-4 2xl:text-[12px]"
+      )}
+    >
+      Login
+    </Link>
+  );
 }
 
 type ProfileControlProps = { open: boolean; onToggle: () => void; onLogout: () => void; userName?: string; userEmail?: string; mobile?: boolean };
 
 const ProfileControl = forwardRef<HTMLDivElement, ProfileControlProps>(({ open, onToggle, onLogout, userName, userEmail, mobile }, ref) => (
   <div ref={ref} className={cn("relative", mobile && "w-full")}>
-    <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={onToggle} className={cn("font-display inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white font-semibold text-[#172033] transition-colors hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)]", mobile ? "w-full justify-center px-4 py-3 text-sm" : "h-[48px] px-3 text-[12px]")}> 
+    <button
+      type="button"
+      aria-haspopup="menu"
+      aria-expanded={open}
+      onClick={onToggle}
+      className={cn(
+        "font-display inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white font-semibold text-[#172033] transition-colors hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)]",
+        mobile ? "w-full justify-center px-4 py-3 text-sm" : "h-[38px] px-3 text-[11.5px] 2xl:h-[40px] 2xl:text-[12px]"
+      )}
+    > 
       <UserRound className="h-4 w-4" aria-hidden="true" /><span className="max-w-[9rem] truncate">{userName ?? "Profile"}</span><ChevronDown className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")} aria-hidden="true" />
     </button>
     {open && <div role="menu" className={cn("absolute right-0 z-50 mt-2 w-64 rounded-lg border border-slate-200 bg-white p-2 text-slate-800 shadow-[0_12px_28px_rgba(15,35,80,0.12)]", mobile && "left-0 right-0 w-full")}> 

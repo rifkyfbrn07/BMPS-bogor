@@ -11,6 +11,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { programs } from "@/lib/data/programs";
+import VisiMisiSection from "@/components/profile/VisiMisiSection";
 
 // Core Values list
 const coreValues = [
@@ -218,49 +219,9 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* 3. VISI & MISI */}
-      <section id="visi-misi" className="bg-white border-y border-slate-200/80 py-16 sm:py-20 lg:py-24">
-        <div className="section-shell">
-          <div className="text-center max-w-2xl mx-auto space-y-4">
-            <span className="font-ui text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">
-              Landasan Utama
-            </span>
-            <h2 className="font-display text-3xl font-extrabold tracking-tight text-navy-deep sm:text-4xl">
-              Visi & Misi Organisasi
-            </h2>
-            <p className="text-sm leading-relaxed text-slate-500">
-              Arah pandang dan rencana strategis kerja BMPS Bogor dalam mendukung peningkatan mutu.
-            </p>
-          </div>
+      {/* 3. VISI & MISI (Animated Editorial Reveal) */}
+      <VisiMisiSection misiItems={misiItems} />
 
-          <div className="mt-14 grid gap-12 lg:mt-20 lg:grid-cols-12 lg:gap-16">
-            {/* VISI — pernyataan besar editorial, tanpa kartu */}
-            <div className="lg:col-span-5">
-              <p className="font-ui text-xs font-bold uppercase tracking-[0.22em] text-blue-royal">Visi</p>
-              <blockquote className="mt-6 font-display text-[1.65rem] font-bold leading-[1.32] tracking-[-0.01em] text-navy-deep sm:text-4xl sm:leading-[1.28]">
-                &ldquo;Membangun pendidikan swasta yang unggul, relevan, dan berdaya saing.&rdquo;
-              </blockquote>
-              <div className="mt-8 h-px w-16 bg-blue-royal/40" aria-hidden="true" />
-              <p className="mt-6 max-w-sm text-sm leading-7 text-slate-500">
-                Menjadi arah pengembangan bagi seluruh kurikulum dan operasional keanggotaan sekolah swasta di Bogor.
-              </p>
-            </div>
-
-            {/* MISI — daftar bernomor dengan ritme vertikal */}
-            <div className="lg:col-span-7">
-              <p className="font-ui text-xs font-bold uppercase tracking-[0.22em] text-blue-royal">Misi</p>
-              <ol className="mt-4 border-t border-slate-200/80">
-                {misiItems.map((misi) => (
-                  <li key={misi.id} className="flex gap-6 border-b border-slate-200/80 py-6 sm:gap-8 sm:py-7">
-                    <span aria-hidden="true" className="font-display pt-0.5 text-sm font-bold tabular-nums text-blue-royal/70">{misi.id}</span>
-                    <p className="min-w-0 text-[15px] leading-7 text-slate-700 sm:text-base">{misi.text}</p>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* 4. NILAI / CORE VALUES */}
       <section className="section-shell py-16 sm:py-20 lg:py-24">
