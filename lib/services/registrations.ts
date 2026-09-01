@@ -21,21 +21,49 @@ async function uniqueSlug(client: Prisma.TransactionClient, base: string, model:
 
 export async function submitRegistration(input: RegistrationInput) {
   const npsn = input.npsn.trim();
+  
+  // 1. Check if school is already fully approved in School directory
   const existingSchool = await prisma.school.findUnique({ where: { npsn }, select: { id: true } });
   if (existingSchool) throw new Error("NPSN_REGISTERED");
-  const pending = await prisma.schoolRegistration.findFirst({ where: { npsn, status: { in: ["PENDING", "UNDER_REVIEW"] } }, select: { id: true } });
-  if (pending) throw new Error("NPSN_PENDING");
+
+  // 2. Check if a registration with this NPSN already exists
+  const existingReg = await prisma.schoolRegistration.findUnique({ where: { npsn } });
+  if (existingReg) {
+    if (existingReg.status === "PENDING" || existingReg.status === "UNDER_REVIEW") {
+      throw new Error("NPSN_PENDING");
+    }
+    if (existingReg.status === "APPROVED") {
+      throw new Error("NPSN_REGISTERED");
+    }
+    // If previous status was REJECTED, delete previous rejected record to allow clean re-application
+    if (existingReg.status === "REJECTED") {
+      await prisma.schoolRegistration.delete({ where: { id: existingReg.id } });
+    }
+  }
+
   const year = new Date().getFullYear();
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     const count = await prisma.schoolRegistration.count({ where: { createdAt: { gte: new Date(`${year}-01-01T00:00:00.000Z`) } } });
-    const registrationNumber = `BMB-${year}-${String(count + 1 + attempt).padStart(6, "0")}`;
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const registrationNumber = `BMB-${year}-${String(count + 1 + attempt).padStart(4, "0")}${randomSuffix}`;
     try {
       return await prisma.schoolRegistration.create({ data: {
-        registrationNumber, name: input.schoolName, npsn, level: input.schoolLevel === "TK" ? "OTHER" : input.schoolLevel,
+        registrationNumber, 
+        name: input.schoolName, 
+        npsn, 
+        level: input.schoolLevel === "TK" ? "OTHER" : input.schoolLevel,
         institutionType: input.institutionType ?? null,
-        foundationName: clean(input.foundationName), principalName: input.principalName || "Belum diisi", picName: input.contactName,
-        picRole: input.picPosition || "Penanggung jawab", email: input.email.toLowerCase(), phone: input.phone, address: input.address,
-        ward: input.village || "Belum diisi", district: input.district || "Belum diisi", city: input.city, province: input.province,
+        foundationName: clean(input.foundationName), 
+        principalName: clean(input.principalName) || "Belum diisi", 
+        picName: input.contactName,
+        picRole: clean(input.picPosition) || "Penanggung jawab", 
+        email: input.email.toLowerCase(), 
+        phone: input.phone, 
+        address: input.address,
+        ward: clean(input.village) || "Belum diisi", 
+        district: clean(input.district) || "Belum diisi", 
+        city: input.city || "Bogor", 
+        province: input.province || "Jawa Barat",
         postalCode: clean(input.postalCode),
         website: clean(input.website), 
         whatsapp: clean(input.whatsapp) || input.phone,
@@ -43,12 +71,22 @@ export async function submitRegistration(input: RegistrationInput) {
         facebook: clean(input.facebook),
         youtube: clean(input.youtube),
         tiktok: clean(input.tiktok),
-        registrationUrl: clean(input.registrationUrl), googleMapsUrl: clean(input.googleMapsUrl),
-        description: clean(input.description), vision: clean(input.vision), mission: clean(input.mission),
-        logoUrl: clean(input.logoUrl), documentUrl: input.documents?.[0],
-        schoolPhotoUrl: clean(input.schoolPhotoUrl), programs: input.programs?.length ? input.programs : [],
+        registrationUrl: clean(input.registrationUrl), 
+        googleMapsUrl: clean(input.googleMapsUrl),
+        description: clean(input.description), 
+        vision: clean(input.vision), 
+        mission: clean(input.mission),
+        logoUrl: clean(input.logoUrl), 
+        documentUrl: input.documents?.[0],
+        schoolPhotoUrl: clean(input.schoolPhotoUrl), 
+        programs: input.programs?.length ? input.programs : [],
       }});
-    } catch (error) { if (attempt === 2) throw error; }
+    } catch (error) { 
+      if (attempt === 4) {
+        console.error("Prisma create error in submitRegistration:", error);
+        throw error; 
+      }
+    }
   }
   throw new Error("REGISTRATION_FAILED");
 }
