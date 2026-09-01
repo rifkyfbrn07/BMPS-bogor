@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import { prisma, ensureDatabaseSchema } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import type { z } from "zod";
 import type { schoolRegistrationSchema } from "@/lib/validation";
@@ -20,6 +20,9 @@ async function uniqueSlug(client: Prisma.TransactionClient, base: string, model:
 }
 
 export async function submitRegistration(input: RegistrationInput) {
+  // Ensure DB columns exist even on freshly deployed / unmigrated databases
+  await ensureDatabaseSchema();
+
   const npsn = input.npsn.trim();
   
   // 1. Check if school is already fully approved in School directory
@@ -92,6 +95,7 @@ export async function submitRegistration(input: RegistrationInput) {
 }
 
 export async function approveRegistration(registrationId: string, adminId: string) {
+  await ensureDatabaseSchema();
   return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const registration = await tx.schoolRegistration.findUnique({ where: { id: registrationId } });
     if (!registration || registration.status === "APPROVED") throw new Error("REGISTRATION_NOT_FOUND");
