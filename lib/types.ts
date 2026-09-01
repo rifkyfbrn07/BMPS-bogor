@@ -17,6 +17,7 @@ export interface SchoolLevel {
 }
 
 export interface School {
+  id?: string;
   slug: string;
   name: string;
   npsn?: string;
@@ -30,6 +31,17 @@ export interface School {
   accreditation?: string;
   studentCount?: number;
   description: string;
+  phone?: string;
+  whatsapp?: string;
+  email?: string;
+  website?: string;
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  tiktok?: string;
+  registrationUrl?: string;
+  googleMapsUrl?: string;
+  principalName?: string;
 }
 
 

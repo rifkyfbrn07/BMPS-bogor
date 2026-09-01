@@ -57,6 +57,11 @@ model School {
   province        String                @default("Jawa Barat")
   postalCode      String?
   website         String?
+  whatsapp        String?
+  instagram       String?
+  facebook        String?
+  youtube         String?
+  tiktok          String?
   registrationUrl String?
   googleMapsUrl   String?
   description     String?
@@ -92,6 +97,11 @@ model SchoolRegistration {
   province           String             @default("Jawa Barat")
   postalCode         String?
   website            String?
+  whatsapp           String?
+  instagram          String?
+  facebook           String?
+  youtube            String?
+  tiktok             String?
   registrationUrl    String?
   googleMapsUrl      String?
   description        String?

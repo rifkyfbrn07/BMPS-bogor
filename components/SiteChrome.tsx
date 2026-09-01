@@ -16,14 +16,15 @@ export default function SiteChrome({
   userEmail?: string;
 }) {
   const pathname = usePathname();
-  const isAuthPage = pathname === "/login" || pathname === "/daftar";
+  const isAdminPage = pathname.startsWith("/admin");
+  const isAuthPage = pathname === "/login" || pathname === "/daftar" || isAdminPage;
   const isHeroPage = pathname === "/";
   const isProfileHero = pathname === "/profile";
   return (
     <>
       {!isAuthPage && <Navbar variant={isHeroPage || isProfileHero ? "hero" : "solid"} authenticated={authenticated} userName={userName} userEmail={userEmail} />}
       {!isAuthPage && !isHeroPage && !isProfileHero && <div aria-hidden="true" className="h-[80px] lg:h-[92px]" />}
-      <main key={pathname} className="page-fade-enter flex-1">{children}</main>
+      <main key={pathname} className={`flex-1 ${isAdminPage ? "" : "page-fade-enter"}`}>{children}</main>
       {!isAuthPage && <Footer />}
     </>
   );

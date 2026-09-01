@@ -28,6 +28,11 @@ export interface PublicSchoolProfile {
   picRole: string | null;
   email: string | null;
   phone: string | null;
+  whatsapp: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  youtube: string | null;
+  tiktok: string | null;
   address: string | null;
   ward: string | null;
   district: string | null;
@@ -97,6 +102,11 @@ export async function getPublicSchoolProfile(slug: string): Promise<PublicSchool
         picRole: pick(registration?.picRole, school.picRole),
         email: pick(registration?.email, school.email),
         phone: pick(registration?.phone, school.phone),
+        whatsapp: pick(registration?.whatsapp, school.whatsapp, registration?.phone, school.phone),
+        instagram: pick(registration?.instagram, school.instagram),
+        facebook: pick(registration?.facebook, school.facebook),
+        youtube: pick(registration?.youtube, school.youtube),
+        tiktok: pick(registration?.tiktok, school.tiktok),
         address: pick(registration?.address, school.address),
         ward: pick(registration?.ward, school.ward),
         district: pick(registration?.district, school.district),
@@ -138,6 +148,11 @@ export async function getPublicSchoolProfile(slug: string): Promise<PublicSchool
     picRole: null,
     email: null,
     phone: null,
+    whatsapp: null,
+    instagram: null,
+    facebook: null,
+    youtube: null,
+    tiktok: null,
     address: clean(staticSchool.address),
     ward: null,
     district: null,

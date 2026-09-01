@@ -16,12 +16,24 @@ import {
   Mail,
   MapPin,
   MessageCircle,
+  Phone,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
+import {
+  InstagramIcon,
+  FacebookIcon,
+  YoutubeIcon,
+  TikTokIcon,
+  WhatsAppIcon,
+} from "@/components/SocialIcons";
 import { getPublicSchoolProfile, type PublicSchoolProfile } from "@/lib/services/school-directory";
 import {
+  buildFacebookLink,
+  buildInstagramLink,
+  buildTikTokLink,
   buildWhatsAppLink,
+  buildYouTubeLink,
   institutionTypeLabel,
   PROGRAM_LABELS,
   schoolLevelLabel,
@@ -94,7 +106,7 @@ function SectionCard({
 }
 
 const CONTACT_LINK_CLASS =
-  "flex min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-royal hover:text-blue-royal";
+  "btn-editorial flex min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-royal hover:text-blue-royal";
 
 export default async function SchoolDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -103,9 +115,14 @@ export default async function SchoolDetailPage({ params }: { params: Promise<{ s
 
   const institutionLabel = institutionTypeLabel(profile.institutionType) ?? "Lembaga Pendidikan";
   const heroImage = profile.photoUrl ?? profile.logoUrl ?? HERO_FALLBACK_IMAGE;
-  const whatsappLink = buildWhatsAppLink(profile.phone);
+  const whatsappLink = buildWhatsAppLink(profile.whatsapp || profile.phone);
+  const instagramLink = buildInstagramLink(profile.instagram);
+  const facebookLink = buildFacebookLink(profile.facebook);
+  const youtubeLink = buildYouTubeLink(profile.youtube);
+  const tiktokLink = buildTikTokLink(profile.tiktok);
+
   const locationLine = [profile.district, profile.city].filter(Boolean).join(", ");
-  const hasContact = Boolean(whatsappLink || profile.email || profile.website);
+  const hasContact = Boolean(whatsappLink || profile.email || profile.website || profile.phone || instagramLink || facebookLink || youtubeLink || tiktokLink);
   const hasCta = Boolean(profile.registrationUrl || profile.website || whatsappLink || profile.email);
 
   return (
@@ -173,21 +190,10 @@ export default async function SchoolDetailPage({ params }: { params: Promise<{ s
                   href={profile.registrationUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-royal sm:w-auto"
+                  className="btn-editorial inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-royal sm:w-auto"
                 >
                   Daftar ke Sekolah
                   <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                </a>
-              )}
-              {profile.website && (
-                <a
-                  href={profile.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-navy-deep transition hover:bg-blue-light sm:w-auto"
-                >
-                  <Globe className="h-4 w-4 text-blue-royal" aria-hidden="true" />
-                  Kunjungi Website
                 </a>
               )}
               {whatsappLink && (
@@ -195,16 +201,27 @@ export default async function SchoolDetailPage({ params }: { params: Promise<{ s
                   href={whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 sm:w-auto"
+                  className="btn-editorial inline-flex w-full items-center justify-center gap-2 rounded-full border border-emerald-300 bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 sm:w-auto"
                 >
                   <MessageCircle className="h-4 w-4" aria-hidden="true" />
                   Hubungi via WhatsApp
                 </a>
               )}
+              {profile.website && (
+                <a
+                  href={profile.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-editorial inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-navy-deep transition hover:bg-blue-light sm:w-auto"
+                >
+                  <Globe className="h-4 w-4 text-blue-royal" aria-hidden="true" />
+                  Kunjungi Website
+                </a>
+              )}
               {profile.email && (
                 <a
                   href={`mailto:${profile.email}`}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-navy-deep transition hover:bg-blue-light sm:w-auto"
+                  className="btn-editorial inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-navy-deep transition hover:bg-blue-light sm:w-auto"
                 >
                   <Mail className="h-4 w-4 text-blue-royal" aria-hidden="true" />
                   Kirim Email
@@ -326,13 +343,50 @@ export default async function SchoolDetailPage({ params }: { params: Promise<{ s
             </SectionCard>
           )}
 
+          {/* Social Media & WhatsApp Interactive Section */}
           {hasContact && (
-            <SectionCard title="Informasi Kontak" icon={<MessageCircle className="h-4 w-4" aria-hidden="true" />}>
+            <SectionCard title="Kontak & Media Sosial" icon={<MessageCircle className="h-4 w-4" aria-hidden="true" />}>
               <div className="flex flex-col gap-2.5">
                 {whatsappLink && (
-                  <a className={CONTACT_LINK_CLASS} href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
-                    <span className="min-w-0 break-words">Hubungi via WhatsApp</span>
+                  <a className="btn-editorial flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100" href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                    <span className="flex items-center gap-2.5">
+                      <WhatsAppIcon className="h-5 w-5 shrink-0 text-emerald-600" />
+                      <span className="min-w-0 break-words">WhatsApp Resmi</span>
+                    </span>
+                    <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Chat &rarr;</span>
+                  </a>
+                )}
+                {instagramLink && (
+                  <a className="btn-editorial flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-pink-200 bg-gradient-to-r from-pink-50 to-purple-50 px-4 py-3 text-sm font-semibold text-pink-800 transition hover:border-pink-300" href={instagramLink} target="_blank" rel="noopener noreferrer">
+                    <span className="flex items-center gap-2.5">
+                      <InstagramIcon className="h-5 w-5 shrink-0 text-pink-600" />
+                      <span className="min-w-0 break-words">Instagram</span>
+                    </span>
+                    <ExternalLink className="h-4 w-4 text-pink-500" aria-hidden="true" />
+                  </a>
+                )}
+                {facebookLink && (
+                  <a className={CONTACT_LINK_CLASS} href={facebookLink} target="_blank" rel="noopener noreferrer">
+                    <FacebookIcon className="h-5 w-5 shrink-0 text-blue-600" />
+                    <span className="min-w-0 break-words">Facebook</span>
+                  </a>
+                )}
+                {youtubeLink && (
+                  <a className={CONTACT_LINK_CLASS} href={youtubeLink} target="_blank" rel="noopener noreferrer">
+                    <YoutubeIcon className="h-5 w-5 shrink-0 text-red-600" />
+                    <span className="min-w-0 break-words">YouTube Channel</span>
+                  </a>
+                )}
+                {tiktokLink && (
+                  <a className={CONTACT_LINK_CLASS} href={tiktokLink} target="_blank" rel="noopener noreferrer">
+                    <TikTokIcon className="h-5 w-5 shrink-0 text-slate-800" />
+                    <span className="min-w-0 break-words">TikTok</span>
+                  </a>
+                )}
+                {profile.phone && !whatsappLink && (
+                  <a className={CONTACT_LINK_CLASS} href={`tel:${profile.phone}`}>
+                    <Phone className="h-4 w-4 shrink-0 text-blue-royal" aria-hidden="true" />
+                    <span className="min-w-0 break-words">{profile.phone}</span>
                   </a>
                 )}
                 {profile.email && (
