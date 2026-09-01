@@ -6,8 +6,9 @@ import { AlertCircle, CheckCircle2, ImagePlus, LoaderCircle, RefreshCcw, Trash2 
 
 const initialForm = {
   schoolName: "", npsn: "", schoolLevel: "", institutionType: "", foundationName: "", principalName: "",
-  contactName: "", picPosition: "", email: "", phone: "", address: "", village: "",
+  contactName: "", picPosition: "", email: "", phone: "", whatsapp: "", address: "", village: "",
   district: "", city: "Bogor", province: "Jawa Barat", postalCode: "", website: "", logoUrl: "",
+  instagram: "", facebook: "", youtube: "", tiktok: "",
   registrationUrl: "", googleMapsUrl: "", description: "", vision: "", mission: "", documentUrl: "",
 };
 
@@ -98,7 +99,20 @@ export default function RegistrationForm() {
       </div>
       <p className="mt-3 text-xs leading-5 text-slate-500">Pilih satu atau lebih program — satu sekolah/yayasan boleh mengikuti lebih dari satu program.</p>
     </Section>
-    <Section title="6. Informasi Online"><div className="grid gap-4 sm:grid-cols-2"><Field label="Website sekolah/yayasan" type="url" value={form.website} onChange={(v) => update("website", v)} placeholder="https://contoh.sch.id" /><Field label="Link pendaftaran" type="url" value={form.registrationUrl} onChange={(v) => update("registrationUrl", v)} placeholder="https://contoh.sch.id/pendaftaran" /><Field label="Google Maps" type="url" value={form.googleMapsUrl} onChange={(v) => update("googleMapsUrl", v)} placeholder="https://maps.google.com/..." /><Field label="URL logo" type="url" value={form.logoUrl} onChange={(v) => update("logoUrl", v)} placeholder="https://..." /><div className="sm:col-span-2"><Field label="URL dokumen pendukung" type="url" value={form.documentUrl} onChange={(v) => update("documentUrl", v)} placeholder="https://..." /></div></div></Section>
+    <Section title="6. Media Sosial & Informasi Online">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Nomor WhatsApp Resmi" type="tel" value={form.whatsapp} onChange={(v) => update("whatsapp", v)} placeholder="Contoh: 081234567890" />
+        <Field label="Website sekolah/yayasan" type="url" value={form.website} onChange={(v) => update("website", v)} placeholder="https://contoh.sch.id" />
+        <Field label="Instagram (Username atau Link)" value={form.instagram} onChange={(v) => update("instagram", v)} placeholder="@sekolah_bogor atau https://instagram.com/..." />
+        <Field label="Facebook (Halaman/Akun)" value={form.facebook} onChange={(v) => update("facebook", v)} placeholder="https://facebook.com/..." />
+        <Field label="YouTube Channel" value={form.youtube} onChange={(v) => update("youtube", v)} placeholder="@sekolahbogor atau https://youtube.com/..." />
+        <Field label="TikTok" value={form.tiktok} onChange={(v) => update("tiktok", v)} placeholder="@sekolahbogor atau https://tiktok.com/..." />
+        <Field label="Link pendaftaran" type="url" value={form.registrationUrl} onChange={(v) => update("registrationUrl", v)} placeholder="https://contoh.sch.id/pendaftaran" />
+        <Field label="Google Maps" type="url" value={form.googleMapsUrl} onChange={(v) => update("googleMapsUrl", v)} placeholder="https://maps.google.com/..." />
+        <Field label="URL logo" type="url" value={form.logoUrl} onChange={(v) => update("logoUrl", v)} placeholder="https://..." />
+        <Field label="URL dokumen pendukung" type="url" value={form.documentUrl} onChange={(v) => update("documentUrl", v)} placeholder="https://..." />
+      </div>
+    </Section>
     <Section title="7. Foto Sekolah">
       {photoPreview ? (
         <div className="max-w-sm">

@@ -144,6 +144,13 @@ export async function GET(
               ward: publicText(item.ward),
               district: publicText(item.district),
               city: item.city,
+              phone: item.phone || undefined,
+              whatsapp: item.whatsapp || item.phone || undefined,
+              instagram: item.instagram || undefined,
+              facebook: item.facebook || undefined,
+              youtube: item.youtube || undefined,
+              tiktok: item.tiktok || undefined,
+              website: item.website || undefined,
             };
           });
 

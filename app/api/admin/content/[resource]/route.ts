@@ -32,6 +32,14 @@ export async function GET(
       return NextResponse.json({ data });
     }
 
+    if (resource === "schools") {
+      const data = await prisma.school.findMany({
+        include: { foundation: true },
+        orderBy: { createdAt: "desc" },
+      });
+      return NextResponse.json({ data });
+    }
+
     return NextResponse.json({ message: "Sumber data tidak ditemukan." }, { status: 404 });
   } catch (error) {
     console.error("GET Admin Content Error:", error);
@@ -146,6 +154,146 @@ export async function POST(
           userId: admin.id,
           action: "TRAINING_CREATED",
           entity: "Training",
+          entityId: data.id,
+        }
+      });
+
+      return NextResponse.json({ data });
+    }
+
+    if (resource === "schools") {
+      const npsn = (body.npsn || "").trim();
+      const slug = body.slug || body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      
+      let foundationId = body.foundationId || null;
+      if (!foundationId && body.foundationName) {
+        const foundSlug = body.foundationName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        const found = await prisma.foundation.upsert({
+          where: { slug: foundSlug },
+          update: {},
+          create: {
+            name: body.foundationName,
+            slug: foundSlug,
+          }
+        });
+        foundationId = found.id;
+      }
+
+      const schoolLevel = body.level || "SMA";
+      const institutionType = body.institutionType || (body.foundationName ? "YAYASAN" : "SEKOLAH");
+
+      const data = await prisma.school.create({
+        data: {
+          name: body.name,
+          npsn,
+          slug,
+          level: schoolLevel,
+          institutionType,
+          foundationId,
+          principalName: body.principalName || null,
+          picName: body.picName || null,
+          picRole: body.picRole || null,
+          email: body.email || null,
+          phone: body.phone || null,
+          whatsapp: body.whatsapp || body.phone || null,
+          instagram: body.instagram || null,
+          facebook: body.facebook || null,
+          youtube: body.youtube || null,
+          tiktok: body.tiktok || null,
+          address: body.address || null,
+          district: body.district || "Bogor",
+          ward: body.ward || null,
+          city: body.city || "Bogor",
+          province: body.province || "Jawa Barat",
+          postalCode: body.postalCode || null,
+          website: body.website || null,
+          registrationUrl: body.registrationUrl || null,
+          googleMapsUrl: body.googleMapsUrl || null,
+          description: body.description || null,
+          vision: body.vision || null,
+          mission: body.mission || null,
+          schoolPhotoUrl: body.schoolPhotoUrl || body.image || null,
+          logoUrl: body.logoUrl || null,
+        },
+      });
+
+      // Buat / sinkronkan SchoolRegistration APPROVED agar tampil di direktori publik
+      const regNum = `BMPS-ADM-${Date.now().toString().slice(-6)}`;
+      await prisma.schoolRegistration.upsert({
+        where: { npsn },
+        update: {
+          name: body.name,
+          level: schoolLevel,
+          institutionType,
+          foundationName: body.foundationName || null,
+          principalName: body.principalName || "Pimpinan Sekolah",
+          picName: body.picName || "Admin Sekolah",
+          picRole: body.picRole || "Pengurus",
+          email: body.email || "info@sekolah.sch.id",
+          phone: body.phone || body.whatsapp || "081234567890",
+          whatsapp: body.whatsapp || body.phone || null,
+          instagram: body.instagram || null,
+          facebook: body.facebook || null,
+          youtube: body.youtube || null,
+          tiktok: body.tiktok || null,
+          address: body.address || "Bogor",
+          district: body.district || "Bogor",
+          ward: body.ward || "Bogor",
+          city: body.city || "Bogor",
+          province: body.province || "Jawa Barat",
+          postalCode: body.postalCode || null,
+          website: body.website || null,
+          registrationUrl: body.registrationUrl || null,
+          googleMapsUrl: body.googleMapsUrl || null,
+          description: body.description || null,
+          vision: body.vision || null,
+          mission: body.mission || null,
+          schoolPhotoUrl: body.schoolPhotoUrl || body.image || null,
+          logoUrl: body.logoUrl || null,
+          status: "APPROVED",
+          reviewedAt: new Date(),
+        },
+        create: {
+          registrationNumber: regNum,
+          name: body.name,
+          npsn,
+          level: schoolLevel,
+          institutionType,
+          foundationName: body.foundationName || null,
+          principalName: body.principalName || "Pimpinan Sekolah",
+          picName: body.picName || "Admin Sekolah",
+          picRole: body.picRole || "Pengurus",
+          email: body.email || "info@sekolah.sch.id",
+          phone: body.phone || body.whatsapp || "081234567890",
+          whatsapp: body.whatsapp || body.phone || null,
+          instagram: body.instagram || null,
+          facebook: body.facebook || null,
+          youtube: body.youtube || null,
+          tiktok: body.tiktok || null,
+          address: body.address || "Bogor",
+          district: body.district || "Bogor",
+          ward: body.ward || "Bogor",
+          city: body.city || "Bogor",
+          province: body.province || "Jawa Barat",
+          postalCode: body.postalCode || null,
+          website: body.website || null,
+          registrationUrl: body.registrationUrl || null,
+          googleMapsUrl: body.googleMapsUrl || null,
+          description: body.description || null,
+          vision: body.vision || null,
+          mission: body.mission || null,
+          schoolPhotoUrl: body.schoolPhotoUrl || body.image || null,
+          logoUrl: body.logoUrl || null,
+          status: "APPROVED",
+          reviewedAt: new Date(),
+        },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          userId: admin.id,
+          action: "SCHOOL_CREATED",
+          entity: "School",
           entityId: data.id,
         }
       });

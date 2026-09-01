@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, MapPin } from "lucide-react";
-import { schoolLevelLabel } from "@/lib/school-labels";
+import { ArrowRight, MapPin, MessageCircle } from "lucide-react";
+import { buildWhatsAppLink, schoolLevelLabel } from "@/lib/school-labels";
 
 type ProgramSchool = {
   slug: string;
@@ -13,17 +13,18 @@ type ProgramSchool = {
   district?: string;
   description?: string;
   image: string;
+  phone?: string;
+  whatsapp?: string;
 };
 
 /** Kartu sekolah/yayasan APPROVED yang mengikuti program (Info Beasiswa / Bantuan Pendidikan). */
 export default function ProgramSchoolCard({ school }: { school: ProgramSchool }) {
   const locationLine = [school.district, school.city].filter(Boolean).join(", ");
+  const waLink = buildWhatsAppLink(school.whatsapp || school.phone);
+
   return (
-    <Link
-      href={`/sekolah/${school.slug}`}
-      className="group card-hover-editorial flex min-w-0 flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200/80 hover:ring-blue-200"
-    >
-      <div className="relative h-44 w-full overflow-hidden bg-slate-100">
+    <div className="group card-hover-editorial flex min-w-0 flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200/80 hover:ring-blue-200">
+      <Link href={`/sekolah/${school.slug}`} className="relative h-44 w-full overflow-hidden bg-slate-100 block">
         <Image
           src={school.image}
           alt={school.name}
@@ -33,12 +34,22 @@ export default function ProgramSchoolCard({ school }: { school: ProgramSchool })
           unoptimized
         />
         <div className="absolute inset-0 bg-slate-900/0 transition-colors duration-500 group-hover:bg-slate-900/10" />
-      </div>
+      </Link>
       <div className="flex flex-1 flex-col gap-2 p-5">
-        <span className="text-xs font-semibold uppercase tracking-wide text-blue-royal">
-          {schoolLevelLabel(school.level)} &middot; {school.type === "yayasan" ? "Yayasan" : "Sekolah"}
-        </span>
-        <h3 className="text-lg font-bold leading-snug text-navy-deep transition-colors duration-300 group-hover:text-blue-royal">{school.name}</h3>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-blue-royal">
+            {schoolLevelLabel(school.level)} &middot; {school.type === "yayasan" ? "Yayasan" : "Sekolah"}
+          </span>
+          {waLink && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+              <MessageCircle className="h-3 w-3 text-emerald-600" />
+              WhatsApp
+            </span>
+          )}
+        </div>
+        <Link href={`/sekolah/${school.slug}`}>
+          <h3 className="text-lg font-bold leading-snug text-navy-deep transition-colors duration-300 group-hover:text-blue-royal">{school.name}</h3>
+        </Link>
         {school.npsn && <p className="text-xs font-semibold tracking-wide text-slate-500">NPSN {school.npsn}</p>}
         {locationLine && (
           <p className="flex items-start gap-2 text-sm text-slate-600">
@@ -49,12 +60,26 @@ export default function ProgramSchoolCard({ school }: { school: ProgramSchool })
         {school.description && (
           <p className="line-clamp-2 text-sm leading-6 text-slate-500">{school.description}</p>
         )}
-        <span className="mt-auto inline-flex items-center gap-2 border-t border-slate-100 pt-3 text-sm font-semibold text-blue-royal transition group-hover:text-navy-deep">
-          Info Selengkapnya
-          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-        </span>
+        <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-3">
+          <Link href={`/sekolah/${school.slug}`} className="inline-flex items-center gap-2 text-sm font-semibold text-blue-royal transition group-hover:text-navy-deep">
+            Info Selengkapnya
+            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+          </Link>
+          {waLink && (
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-editorial inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+              title="Chat via WhatsApp"
+            >
+              <MessageCircle className="h-3.5 w-3.5 text-emerald-600" />
+              WA
+            </a>
+          )}
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }
 
