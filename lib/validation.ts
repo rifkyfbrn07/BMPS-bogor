@@ -19,7 +19,7 @@ export const schoolRegistrationSchema = z.object({
   schoolName: z.string().trim().min(2, "Nama sekolah/yayasan wajib diisi (minimal 2 karakter).").max(160),
   npsn: z.string().trim().regex(/^\d{8}$/, "NPSN harus terdiri dari 8 digit angka."),
   schoolLevel: z.enum(["TK", "SD", "SMP", "SMA", "SMK", "MI", "MTs", "MA", "OTHER"], {
-    errorMap: () => ({ message: "Silakan pilih jenjang pendidikan." })
+    message: "Silakan pilih jenjang pendidikan.",
   }),
   institutionType: institutionTypeSchema.optional(),
   foundationName: optionalText(160),
