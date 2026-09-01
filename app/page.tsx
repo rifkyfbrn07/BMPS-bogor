@@ -3,18 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import HeroSection from "@/components/home/HeroSection";
 import NewsCard from "@/components/NewsCard";
 import { news } from "@/lib/data/news";
 import { schools } from "@/lib/data/schools";
 import FilterButton from "@/components/FilterButton";
 import ProgramExplorer from "@/components/program/ProgramExplorer";
 import type { School } from "@/lib/types";
-
+import { gsap, prefersReducedMotion } from "@/lib/motion";
 
 const galleryItems = [
   {
-     image: "/7.png",
+    image: "/7.png",
     title: "Pelantikan BMPS Komisariat Kab. Bogor",
   },
   {
@@ -43,6 +44,12 @@ export default function Home() {
   const latestNews = news.slice(0, 3);
   const [schoolsList, setSchoolsList] = useState<School[]>(schools);
   const [selectedLevelTab, setSelectedLevelTab] = useState("Semua");
+  const [filterTransitioning, setFilterTransitioning] = useState(false);
+
+  const schoolSectionRef = useRef<HTMLElement>(null);
+  const newsSectionRef = useRef<HTMLElement>(null);
+  const gallerySectionRef = useRef<HTMLElement>(null);
+  const ctaSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     fetch("/api/content/schools")
@@ -54,6 +61,122 @@ export default function Home() {
       })
       .catch((err) => console.error("Gagal memuat sekolah:", err));
   }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+
+    const ctx = gsap.context(() => {
+      // School Directory Section
+      if (schoolSectionRef.current) {
+        gsap.from("[data-animate='school-header']", {
+          y: 28,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: schoolSectionRef.current,
+            start: "top 80%",
+            once: true,
+          },
+        });
+
+        gsap.from("[data-animate='school-cards'] > *", {
+          y: 24,
+          opacity: 0,
+          duration: 0.65,
+          ease: "power3.out",
+          stagger: 0.08,
+          scrollTrigger: {
+            trigger: "[data-animate='school-cards']",
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
+
+      // News Section
+      if (newsSectionRef.current) {
+        gsap.from("[data-animate='news-header']", {
+          y: 28,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: newsSectionRef.current,
+            start: "top 80%",
+            once: true,
+          },
+        });
+
+        gsap.from("[data-animate='news-cards'] > *", {
+          y: 26,
+          opacity: 0,
+          duration: 0.7,
+          ease: "power3.out",
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: "[data-animate='news-cards']",
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
+
+      // Gallery Section
+      if (gallerySectionRef.current) {
+        gsap.from("[data-animate='gallery-header']", {
+          y: 26,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: gallerySectionRef.current,
+            start: "top 80%",
+            once: true,
+          },
+        });
+
+        gsap.from("[data-animate='gallery-grid'] > *", {
+          scale: 0.96,
+          opacity: 0,
+          duration: 0.7,
+          ease: "power3.out",
+          stagger: 0.08,
+          scrollTrigger: {
+            trigger: "[data-animate='gallery-grid']",
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
+
+      // CTA Section
+      if (ctaSectionRef.current) {
+        gsap.from("[data-animate='cta-box']", {
+          y: 30,
+          opacity: 0,
+          duration: 0.85,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ctaSectionRef.current,
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  const handleTabChange = (tab: string) => {
+    if (tab === selectedLevelTab) return;
+    setFilterTransitioning(true);
+    setTimeout(() => {
+      setSelectedLevelTab(tab);
+      setFilterTransitioning(false);
+    }, 150);
+  };
 
   const filteredSchools = schoolsList.filter((school) => {
     if (selectedLevelTab === "Semua") return true;
@@ -68,62 +191,14 @@ export default function Home() {
 
   return (
     <div className="pb-20">
-      {/* Navbar fixed kini mengambang di viewport — hero langsung mulai dari
-          atas viewport dan navbar melayang di atasnya (tanpa kompensasi margin). */}
-      <div className="relative overflow-hidden bg-[#061629]">
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/art.png')",
-            backgroundPosition: "center center",
-            backgroundSize: "cover",
-          }}
-        />
+      {/* Editorial Intentional Hero Section */}
+      <HeroSection />
 
-        <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(5,18,32,0.62),rgba(5,18,32,0.28)_58%,rgba(5,18,32,0.16)),linear-gradient(0deg,rgba(5,18,32,0.42),rgba(5,18,32,0.08)_62%)]" />
-
-        <div className="relative z-10">
-          <section className="relative flex min-h-[clamp(520px,52vw,660px)] items-center overflow-hidden pb-14 pt-28 sm:pb-16 sm:pt-32 lg:pb-20 lg:pt-36">
-            <div className="mx-auto flex w-full max-w-[1280px] -translate-y-4 justify-center px-5 text-center text-white animate-fade-in-up sm:-translate-y-5 sm:px-8 lg:-translate-y-6 lg:px-12">
-              <div className="w-full max-w-[1100px]">
-                <h1 className="font-display mx-auto max-w-[1100px] text-[2rem] font-semibold leading-[1.12] tracking-normal sm:text-[2.5rem] md:text-[2.75rem] lg:text-[2.875rem] xl:text-[3rem]">
-                  Selamat Datang di
-                  <br />
-                  Badan Musyawarah Perguruan Swasta
-                  <br />
-                  (BMPS) Bogor
-                </h1>
-                <p className="font-ui mx-auto mt-6 max-w-[820px] text-center text-base font-normal leading-[1.6] tracking-normal text-white/85 sm:text-[1.08rem]">
-                  Wadah organisasi yang menjadi tempat berhimpun, berkomunikasi,
-                  dan berkolaborasi bagi sekolah/perguruan swasta di wilayah Bogor.
-                </p>
-
-                <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Link
-                  href="/daftar-sekolah"
-                  className="group font-display inline-flex items-center justify-center gap-2 rounded-xl border border-white/75 bg-transparent px-5 py-3 text-sm font-semibold text-white transition-[background-color,color,border-color,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-[#172033]"
-                >
-                  Masukan Data Sekolah/Yayasan ke BMPS
-                  <ChevronRight className="h-4 w-4 transition-colors duration-200 group-hover:text-[#172033]" aria-hidden="true" />
-                </Link>
-                <Link
-                  href="/program"
-                  className="group font-display inline-flex items-center justify-center gap-2 rounded-xl border border-white/75 bg-transparent px-5 py-3 text-sm font-semibold text-white transition-[background-color,color,border-color,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-[#172033]"
-                >
-                  Lihat Program
-                  <ChevronRight className="h-4 w-4 transition-colors duration-200 group-hover:text-[#172033]" aria-hidden="true" />
-                </Link>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-
-      <section className="bg-white py-16 sm:py-20 lg:py-24">
+      {/* Direktori Anggota Section */}
+      <section ref={schoolSectionRef} className="bg-white py-16 sm:py-20 lg:py-24">
         <div className="section-shell">
           <div className="grid gap-10 lg:grid-cols-[0.78fr_1.42fr] lg:items-center lg:gap-14">
-            <div className="max-w-md">
+            <div data-animate="school-header" className="max-w-md">
               <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-blue-royal">
                 <span aria-hidden="true" className="h-px w-8 bg-blue-royal/50" />
                 Direktori Anggota
@@ -145,7 +220,7 @@ export default function Home() {
                     key={tab}
                     label={tab}
                     active={selectedLevelTab === tab}
-                    onClick={() => setSelectedLevelTab(tab)}
+                    onClick={() => handleTabChange(tab)}
                   />
                 ))}
               </div>
@@ -153,12 +228,17 @@ export default function Home() {
 
             <div className="overflow-hidden">
               {filteredSchools.length > 0 ? (
-                <div className="touch-scroll scrollbar-hide flex gap-4 overflow-x-auto pb-3 [scrollbar-width:none]">
+                <div
+                  data-animate="school-cards"
+                  className={`touch-scroll scrollbar-hide flex gap-4 overflow-x-auto pb-3 transition-opacity duration-200 ease-out [scrollbar-width:none] ${
+                    filterTransitioning ? "opacity-40" : "opacity-100"
+                  }`}
+                >
                   {filteredSchools.map((school) => (
                     <Link
                       key={school.slug}
                       href={`/sekolah/${school.slug}`}
-                      className="group relative min-h-[300px] min-w-[78vw] snap-start overflow-hidden rounded-[16px] border border-slate-200 bg-white shadow-[0_8px_20px_rgba(15,35,80,0.05)] sm:min-h-[320px] sm:min-w-[240px]"
+                      className="group card-hover-editorial relative min-h-[300px] min-w-[78vw] snap-start overflow-hidden rounded-[18px] border border-slate-200/90 bg-white shadow-[0_8px_20px_rgba(15,35,80,0.05)] hover:border-blue-200 sm:min-h-[320px] sm:min-w-[240px]"
                     >
                       <div className="absolute inset-0">
                         <Image
@@ -166,20 +246,20 @@ export default function Home() {
                           alt={school.name}
                           fill
                           sizes="(max-width: 768px) 80vw, 32vw"
-                          className="object-cover transition duration-500 group-hover:scale-105"
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                         />
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/30 to-transparent transition-opacity duration-300 group-hover:from-slate-950/90" />
                       <div className="absolute inset-x-0 bottom-0 flex h-full flex-col justify-end p-4 sm:p-5">
                         <div className="mb-3 flex items-center justify-between gap-3">
-                          <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-sm">
+                          <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/90 backdrop-blur-sm">
                             {school.level}
                           </span>
-                          <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-sm">
+                          <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/90 backdrop-blur-sm">
                             {school.type === "yayasan" ? "Yayasan" : "Sekolah"}
                           </span>
                         </div>
-                        <h3 className="text-lg font-bold leading-snug text-white sm:text-xl">
+                        <h3 className="text-lg font-bold leading-snug text-white transition-colors group-hover:text-blue-200 sm:text-xl">
                           {school.name}
                         </h3>
                         {school.npsn && (
@@ -187,10 +267,10 @@ export default function Home() {
                             NPSN {school.npsn}
                           </p>
                         )}
-                        <p className="mt-2 text-sm text-slate-200">{school.address}</p>
-                        <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                          Selengkapnya
-                          <ChevronRight className="h-4 w-4" />
+                        <p className="mt-2 line-clamp-2 text-sm text-slate-200">{school.address}</p>
+                        <div className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white">
+                          <span>Selengkapnya</span>
+                          <ChevronRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                         </div>
                       </div>
                     </Link>
@@ -206,9 +286,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20 lg:py-24">
+      {/* Berita & Kegiatan Section */}
+      <section ref={newsSectionRef} className="bg-white py-16 sm:py-20 lg:py-24">
         <div className="section-shell">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div data-animate="news-header" className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="min-w-0 max-w-2xl">
               <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-blue-royal">
                 <span aria-hidden="true" className="h-px w-8 bg-blue-royal/50" />
@@ -225,7 +306,7 @@ export default function Home() {
               <ChevronRight className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1" aria-hidden="true" />
             </Link>
           </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div data-animate="news-cards" className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {latestNews.map((item) => (
               <NewsCard key={item.slug} item={item} />
             ))}
@@ -233,11 +314,13 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Program Explorer Section */}
       <ProgramExplorer />
 
-      <section className="bg-white py-16 sm:py-20 lg:py-24">
+      {/* Galeri Kegiatan Section */}
+      <section ref={gallerySectionRef} className="bg-white py-16 sm:py-20 lg:py-24">
         <div className="section-shell">
-          <div className="max-w-2xl">
+          <div data-animate="gallery-header" className="max-w-2xl">
             <h3 className="text-2xl font-bold tracking-[-0.02em] text-navy-deep sm:text-3xl">
               Galeri Kegiatan BMPS Bogor
             </h3>
@@ -247,20 +330,20 @@ export default function Home() {
           </div>
 
           <div className="mt-10">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div data-animate="gallery-grid" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {galleryItems.map((item) => (
                 <div
                   key={item.title}
-                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_12px_28px_rgba(15,23,42,0.06)]"
+                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_10px_26px_rgba(15,23,42,0.05)]"
                 >
                   <Image
                     src={item.image}
                     alt={item.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/10 to-transparent transition-opacity duration-300 group-hover:from-slate-950/80" />
                   <div className="absolute inset-x-0 bottom-0 p-4">
                     <span className="text-sm font-medium text-white">{item.title}</span>
                   </div>
@@ -271,9 +354,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-4 pb-16 pt-4 sm:px-6 sm:pb-20 lg:px-8">
+      {/* CTA Section */}
+      <section ref={ctaSectionRef} className="px-4 pb-16 pt-4 sm:px-6 sm:pb-20 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-[#0b1e3d] shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
+          <div data-animate="cta-box" className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-[#0b1e3d] shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
             <div
               className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
               style={{
@@ -296,7 +380,7 @@ export default function Home() {
                 <div className="mt-7 flex justify-center">
                   <Link
                     href="/daftar-sekolah"
-                    className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[var(--brand-primary)] shadow-[0_10px_20px_rgba(255,255,255,0.14)] transition duration-200 hover:-translate-y-0.5 hover:bg-slate-100"
+                    className="btn-editorial inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[var(--brand-primary)] shadow-[0_10px_20px_rgba(255,255,255,0.14)] hover:bg-slate-100"
                   >
                     Masukan Data Sekolah/Yayasan ke BMPS
                   </Link>
