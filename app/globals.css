@@ -98,19 +98,16 @@ h6 {
 
   /* Glass navbar terang: satu permukaan Liquid Glass penuh membungkus Logo, Navigation, CTA & Login. */
   .glass-navbar {
-    width: 100%;
-    box-sizing: border-box;
-    pointer-events: auto;
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.65);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.85),
-      inset 0 -1px 0 rgba(15, 35, 80, 0.04),
-      0 2px 4px rgba(15, 35, 80, 0.04),
-      0 16px 40px -16px rgba(15, 35, 80, 0.16);
-  }
+  width: 100%;
+  box-sizing: border-box;
+  pointer-events: auto;
+
+  background: #FFFFFF;
+  border: 1px solid #EAEAEA;
+  box-shadow:
+    0 2px 4px rgba(15, 35, 80, 0.04),
+    0 16px 40px -16px rgba(15, 35, 80, 0.12);
+}
 
   /* Permukaan glass yang lebih tegas saat halaman digulir:
      lebih opaque, blur lebih kuat, shadow lebih terlihat. */

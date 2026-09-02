@@ -7,12 +7,14 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 // Fallback database URL for build time when DATABASE_URL is not set on Vercel
 const connectionString = process.env.DATABASE_URL || "postgresql://mock:mock@localhost:5432/mock?schema=public";
 
+const isLocalDb = connectionString.includes("localhost") || connectionString.includes("127.0.0.1") || connectionString.includes("mock@localhost");
+
 export const prisma = (() => {
   if (globalForPrisma.prisma) return globalForPrisma.prisma;
 
   const pool = new pg.Pool({
     connectionString,
-    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
+    ssl: (process.env.NODE_ENV === "production" && !isLocalDb) ? { rejectUnauthorized: false } : undefined,
     max: 10, // Max connection limit safe for serverless postgres pools
   });
 
