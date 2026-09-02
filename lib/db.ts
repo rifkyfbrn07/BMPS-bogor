@@ -4,11 +4,13 @@ const connectionString = process.env.DATABASE_URL || "postgresql://mock:mock@loc
 
 const globalForDatabase = globalThis as unknown as { pool?: Pool };
 
+const isLocalDb = connectionString.includes("localhost") || connectionString.includes("127.0.0.1") || connectionString.includes("mock@localhost");
+
 export const db =
   globalForDatabase.pool ??
   new Pool({
     connectionString,
-    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
+    ssl: (process.env.NODE_ENV === "production" && !isLocalDb) ? { rejectUnauthorized: false } : undefined,
   });
 
 if (process.env.NODE_ENV !== "production") {
