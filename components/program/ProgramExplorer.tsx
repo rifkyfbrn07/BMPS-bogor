@@ -128,7 +128,7 @@ export default function ProgramExplorer() {
           <div data-reveal="heading" className="min-w-0 max-w-2xl">
             <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-blue-royal">
               <span aria-hidden="true" className="h-px w-8 bg-blue-royal/50" />
-              Program BMPS
+              
             </p>
             <h2
               id="program-bmps-heading"

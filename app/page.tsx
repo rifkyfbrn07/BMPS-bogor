@@ -201,7 +201,7 @@ export default function Home() {
             <div data-animate="school-header" className="max-w-md">
               <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-blue-royal">
                 <span aria-hidden="true" className="h-px w-8 bg-blue-royal/50" />
-                Direktori Anggota
+                
               </p>
               <h2 className="mt-4 text-3xl font-bold leading-[1.15] tracking-[-0.02em] text-navy-deep sm:text-[2.4rem]">
                 Mengenal
@@ -293,7 +293,7 @@ export default function Home() {
             <div className="min-w-0 max-w-2xl">
               <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-blue-royal">
                 <span aria-hidden="true" className="h-px w-8 bg-blue-royal/50" />
-                Berita &amp; Kegiatan
+                
               </p>
               <h2 className="mt-4 text-3xl font-bold leading-tight tracking-[-0.02em] text-navy-deep sm:text-[2.1rem]">
                 Kabar terbaru dari lapangan
