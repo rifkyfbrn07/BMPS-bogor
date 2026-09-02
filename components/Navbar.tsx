@@ -76,9 +76,9 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const activeStates = navLinks.map((link) => isActive(link.href));
 
-  // Di atas hero image navbar memakai varian glass gelap; setelah digulir,
-  // permukaannya berubah menjadi glass terang agar tetap terbaca.
-  const dark = variant === "hero" && !scrolled;
+  // Di atas hero image navbar memakai varian gelap jika belum digulir dan menu tertutup.
+  // Saat menu mobile terbuka, navbar selalu solid putih agar kontras dan terbaca jelas.
+  const dark = variant === "hero" && !scrolled && !menuOpen;
 
   async function logout() {
     setProfileOpen(false);
@@ -189,23 +189,23 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
           onClick={() => setMenuOpen((current) => !current)}
           className={cn(
             "flex h-9 w-9 items-center justify-center rounded-xl border transition xl:hidden",
-            dark ? "border-slate-700 text-white hover:bg-[#142852]" : "border-slate-200 text-[#172033] hover:bg-slate-100"
+            dark ? "border-slate-700 text-white hover:bg-[#142852]" : "border-slate-200 bg-slate-50 text-[#172033] hover:bg-slate-100"
           )}
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
-      {/* Drawer mobile/tablet (<1280px) — solid panel di bawah bar. */}
+      {/* Drawer mobile/tablet (<1280px) — Solid Opaque White Panel */}
       <div
         id="mobile-menu"
         className={cn(
-          "glass-navbar pointer-events-auto overflow-hidden rounded-2xl p-2.5 transition-[max-height,opacity,margin-top,visibility] duration-300 ease-out xl:hidden",
-          menuOpen ? "visible mt-2 max-h-[36rem] opacity-100" : "invisible max-h-0 opacity-0"
+          "mobile-menu-panel pointer-events-auto overflow-y-auto max-h-[calc(100dvh-5.5rem)] rounded-2xl p-4 bg-white transition-all duration-200 ease-out xl:hidden",
+          menuOpen ? "visible mt-2.5 opacity-100 shadow-2xl" : "invisible max-h-0 opacity-0 pointer-events-none p-0 border-0"
         )}
       >
         <nav aria-label="Navigasi seluler">
-          <div className="grid gap-0.5">
+          <div className="grid gap-1">
             {navLinks.map((link, index) => {
               const active = activeStates[index];
               return (
@@ -215,21 +215,39 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
                   aria-current={active ? "page" : undefined}
                   onClick={() => setMenuOpen(false)}
                   className={cn(
-                    "nav-pill flex items-center justify-between px-3.5 py-2.5",
+                    "flex items-center justify-between px-4 py-3 rounded-xl transition-colors",
                     link.tier === "primary" ? "text-sm font-semibold tracking-[-0.01em]" : "text-[13px] font-medium",
-                    active ? "nav-pill-active" : "text-slate-600 hover:bg-slate-100 hover:text-[#172033]"
+                    active ? "bg-[#EAF2FF] text-[#174EA6] font-semibold shadow-inner" : "text-slate-700 hover:bg-slate-100 hover:text-[#172033]"
                   )}
                 >
                   {link.label}
-                  {active && <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--brand-primary)]" />}
+                  {active && <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[#174EA6]" />}
                 </Link>
               );
             })}
           </div>
         </nav>
-        <div className="mt-2 grid gap-2 border-t border-slate-200 pt-3">
-          <Link href="/daftar-sekolah" onClick={() => setMenuOpen(false)} className="font-display rounded-xl bg-[#172033] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#0f172a]">Masukan Data Sekolah/Yayasan ke BMPS</Link>
-          {authenticated ? <ProfileControl ref={profileRef} open={profileOpen} onToggle={() => setProfileOpen((current) => !current)} onLogout={logout} userName={userName} userEmail={userEmail} mobile /> : <LoginLink mobile onClick={() => setMenuOpen(false)} />}
+        <div className="mt-3 grid gap-2.5 border-t border-slate-200 pt-3">
+          <Link
+            href="/daftar-sekolah"
+            onClick={() => setMenuOpen(false)}
+            className="font-display rounded-xl bg-[#172033] px-4 py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0f172a]"
+          >
+            Masukan Data Sekolah/Yayasan ke BMPS
+          </Link>
+          {authenticated ? (
+            <ProfileControl
+              ref={profileRef}
+              open={profileOpen}
+              onToggle={() => setProfileOpen((current) => !current)}
+              onLogout={logout}
+              userName={userName}
+              userEmail={userEmail}
+              mobile
+            />
+          ) : (
+            <LoginLink mobile onClick={() => setMenuOpen(false)} />
+          )}
         </div>
       </div>
     </header>
