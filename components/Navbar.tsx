@@ -20,6 +20,7 @@ const navLinks: NavItem[] = [
   { label: "Beranda", href: "/", tier: "primary" },
   { label: "Tentang BMPS", href: "/profile", tier: "primary" },
   { label: "Program", href: "/program", tier: "primary" },
+  { label: "Daftar Sekolah", href: "/sekolah", tier: "primary" },
   { label: "Berita", href: "/berita", tier: "primary" },
   { label: "Pelatihan", href: "/pelatihan", tier: "secondary" },
   { label: "Bantuan Pendidikan", href: "/bantuan-pendidikan", tier: "secondary" },
