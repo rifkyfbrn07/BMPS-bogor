@@ -292,20 +292,12 @@ export default function RegistrationForm() {
 
   return (
     <>
-      <form onSubmit={submit} className="soft-panel p-5 sm:p-8" noValidate>
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-royal">Pendaftaran lembaga</p>
-          <h2 className="mt-2 text-2xl font-bold text-navy-deep sm:text-3xl">Masukan Data Sekolah/Yayasan ke BMPS</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Lengkapi data lembaga Anda. Formulir ini divalidasi langsung dan akan diperiksa oleh admin BMPS Bogor.
-          </p>
-        </div>
-
+      <form onSubmit={submit} className="rounded-[20px] border border-[#E5E7EB] bg-white p-6 sm:p-8 lg:p-10 shadow-sm" noValidate>
         {/* Global Error Banner with Action Tip */}
         {message && (
           <div 
             role="alert" 
-            className={`mt-6 flex items-start gap-3 rounded-2xl p-4 text-sm font-semibold shadow-sm transition ${
+            className={`mb-6 flex items-start gap-3 rounded-2xl p-4 text-sm font-semibold shadow-sm transition ${
               status === "success" 
                 ? "border border-emerald-200 bg-emerald-50 text-emerald-800" 
                 : "border border-red-200 bg-red-50 text-red-800"
@@ -328,7 +320,7 @@ export default function RegistrationForm() {
         )}
 
         {/* SECTION 1: INFORMASI SEKOLAH */}
-        <Section title="1. Informasi Sekolah/Yayasan">
+        <Section title="1. INFORMASI SEKOLAH/YAYASAN">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field 
               id="schoolName"
@@ -393,7 +385,7 @@ export default function RegistrationForm() {
         </Section>
 
         {/* SECTION 2: PROFIL */}
-        <Section title="2. Profil Lembaga">
+        <Section title="2. PROFIL LEMBAGA">
           <div className="grid gap-4">
             <TextArea 
               id="description"
@@ -427,7 +419,7 @@ export default function RegistrationForm() {
         </Section>
 
         {/* SECTION 3: PENANGGUNG JAWAB */}
-        <Section title="3. Penanggung Jawab (PIC)">
+        <Section title="3. PENANGGUNG JAWAB (PIC)">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field 
               id="contactName"
@@ -475,7 +467,7 @@ export default function RegistrationForm() {
         </Section>
 
         {/* SECTION 4: ALAMAT */}
-        <Section title="4. Lokasi & Alamat Lembaga">
+        <Section title="4. LOKASI & ALAMAT LEMBAGA">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <TextArea 
@@ -535,25 +527,25 @@ export default function RegistrationForm() {
         </Section>
 
         {/* SECTION 5: PROGRAM BMPS */}
-        <Section title="5. Program BMPS yang Diikuti">
+        <Section title="5. PROGRAM BMPS YANG DIIKUTI">
           <div className="grid gap-3 sm:grid-cols-2">
             {programOptions.map((option) => (
               <label 
                 key={option.value} 
                 className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-all ${
                   programs.includes(option.value) 
-                    ? "border-blue-royal bg-blue-light/60 ring-2 ring-blue-royal/20" 
-                    : "border-slate-200 bg-white hover:border-blue-royal/50 hover:bg-slate-50/60"
+                    ? "border-[#1B5DBF] bg-[#EAF2FF]/60 ring-2 ring-[#1B5DBF]/20" 
+                    : "border-[#E5E7EB] bg-white hover:border-[#1B5DBF]/50 hover:bg-slate-50/60"
                 }`}
               >
                 <input 
                   type="checkbox" 
                   checked={programs.includes(option.value)} 
                   onChange={() => toggleProgram(option.value)} 
-                  className="mt-0.5 h-4 w-4 shrink-0 accent-[#102b6b]" 
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-[#1B5DBF]" 
                 />
                 <span className="min-w-0">
-                  <span className="block text-sm font-bold text-navy-deep">{option.label}</span>
+                  <span className="block text-sm font-bold text-[#0F1F4A]">{option.label}</span>
                   <span className="mt-0.5 block text-xs leading-5 text-slate-500">
                     Sekolah/yayasan akan tampil pada halaman direktori {option.label} setelah diverifikasi admin.
                   </span>
@@ -565,7 +557,7 @@ export default function RegistrationForm() {
         </Section>
 
         {/* SECTION 6: MEDIA SOSIAL & INFORMASI ONLINE */}
-        <Section title="6. Media Sosial & Informasi Online">
+        <Section title="6. MEDIA SOSIAL & INFORMASI ONLINE">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field 
               id="whatsapp"
@@ -657,17 +649,17 @@ export default function RegistrationForm() {
         </Section>
 
         {/* SECTION 7: FOTO SEKOLAH */}
-        <Section title="7. Foto Sekolah / Gedung Lembaga">
+        <Section title="7. FOTO SEKOLAH / GEDUNG LEMBAGA">
           {photoPreview ? (
             <div className="max-w-sm">
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm">
                 <Image src={photoPreview} alt="Pratinjau foto sekolah" fill sizes="(max-width: 640px) 100vw, 384px" className="object-cover" unoptimized />
-                <span className="absolute left-3 top-3 rounded-full bg-[#0c2866]/90 backdrop-blur-sm px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-white">
+                <span className="absolute left-3 top-3 rounded-full bg-[#0F1F4A]/90 backdrop-blur-sm px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-white">
                   Foto Sekolah
                 </span>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:border-blue-royal hover:text-blue-royal shadow-sm">
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:border-[#1B5DBF] hover:text-[#1B5DBF] shadow-sm">
                   <RefreshCcw className="h-3.5 w-3.5" aria-hidden="true" /> Ganti Foto
                   <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handlePhotoChange} />
                 </label>
@@ -677,9 +669,9 @@ export default function RegistrationForm() {
               </div>
             </div>
           ) : (
-            <label className="flex w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center transition hover:border-blue-royal hover:bg-blue-light/40">
-              <ImagePlus className="h-8 w-8 text-blue-royal" aria-hidden="true" />
-              <span className="text-sm font-bold text-navy-deep">Pilih Foto Sekolah</span>
+            <label className="flex w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center transition hover:border-[#1B5DBF] hover:bg-[#EAF2FF]/40">
+              <ImagePlus className="h-8 w-8 text-[#1B5DBF]" aria-hidden="true" />
+              <span className="text-sm font-bold text-[#0F1F4A]">Pilih Foto Sekolah</span>
               <span className="text-xs text-slate-500">JPG, JPEG, PNG, atau WEBP &middot; maksimal 5 MB</span>
               <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handlePhotoChange} />
             </label>
@@ -693,14 +685,14 @@ export default function RegistrationForm() {
         </Section>
 
         {/* SUBMIT BUTTON */}
-        <div className="mt-8 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-8 pt-6 border-t border-[#E5E7EB] flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-slate-500">
             Pastikan semua data bertanda bintang (<span className="text-red-500 font-bold">*</span>) telah terisi dengan benar.
           </p>
           <button 
             type="submit" 
             disabled={status === "loading"} 
-            className="btn-editorial inline-flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-full bg-[#0c2866] px-8 py-3.5 text-sm font-bold text-white transition hover:bg-blue-royal hover:scale-105 active:scale-95 shadow-md disabled:cursor-not-allowed disabled:opacity-70"
+            className="btn-editorial inline-flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-xl bg-[#0F1F4A] px-8 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#1B2CC1] active:scale-95 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {status === "loading" && <LoaderCircle className="h-4 w-4 animate-spin" />}
             {status === "loading" ? "Mengirim pendaftaran..." : "Kirim Pendaftaran Sekolah"}
@@ -755,13 +747,13 @@ export default function RegistrationForm() {
             {/* RECEIPT / KARTU NOMOR REGISTRASI */}
             {/* ======================================== */}
             <div className="mt-6 rounded-2xl border-2 border-dashed border-blue-300/80 bg-gradient-to-b from-blue-50/70 via-slate-50/50 to-white p-4 sm:p-5 text-center shadow-inner relative">
-              <p className="text-[11px] font-extrabold uppercase tracking-widest text-blue-royal">
+              <p className="text-[11px] font-extrabold uppercase tracking-widest text-[#1B5DBF]">
                 Nomor Registrasi Resmi
               </p>
 
               {/* Big Monospace Code with 1-click Copy */}
               <div className="mt-2 flex items-center justify-center gap-2">
-                <span className="font-mono text-2xl sm:text-3xl font-extrabold tracking-wider text-[#0c2866] select-all bg-white px-4 py-1.5 rounded-xl border border-blue-200 shadow-sm">
+                <span className="font-mono text-2xl sm:text-3xl font-extrabold tracking-wider text-[#0F1F4A] select-all bg-white px-4 py-1.5 rounded-xl border border-blue-200 shadow-sm">
                   {successReceipt.registrationNumber}
                 </span>
                 <button
@@ -770,7 +762,7 @@ export default function RegistrationForm() {
                   className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition shadow-sm ${
                     copied 
                       ? "bg-emerald-600 text-white" 
-                      : "bg-[#0c2866] hover:bg-blue-royal text-white active:scale-95"
+                      : "bg-[#0F1F4A] hover:bg-[#1B5DBF] text-white active:scale-95"
                   }`}
                   title="Salin Nomor Registrasi"
                 >
@@ -783,7 +775,7 @@ export default function RegistrationForm() {
               <div className="mt-4 pt-3 border-t border-slate-200/80 text-left space-y-1.5 text-xs text-slate-600">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Lembaga:</span>
-                  <span className="font-bold text-navy-deep text-right truncate max-w-[240px]">{successReceipt.schoolName}</span>
+                  <span className="font-bold text-[#0F1F4A] text-right truncate max-w-[240px]">{successReceipt.schoolName}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Waktu Pengajuan:</span>
@@ -820,7 +812,7 @@ export default function RegistrationForm() {
             <div className="mt-6 flex flex-col sm:flex-row gap-2.5 pt-2">
               <Link
                 href={`/daftar?registration_number=${encodeURIComponent(successReceipt.registrationNumber)}&email=${encodeURIComponent(successReceipt.email)}`}
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[#0c2866] hover:bg-blue-royal text-white text-xs sm:text-sm font-bold py-3.5 px-4 shadow-md transition hover:scale-[1.02] active:scale-95"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#0F1F4A] hover:bg-[#1B5DBF] text-white text-xs sm:text-sm font-bold py-3.5 px-4 shadow-sm transition hover:scale-[1.02] active:scale-95"
               >
                 <ExternalLink className="h-4 w-4" />
                 Cek Status Pendaftaran
@@ -828,7 +820,7 @@ export default function RegistrationForm() {
               <button
                 type="button"
                 onClick={() => setSuccessReceipt(null)}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs sm:text-sm font-bold py-3.5 px-5 shadow-sm transition active:scale-95"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs sm:text-sm font-bold py-3.5 px-5 shadow-sm transition active:scale-95"
               >
                 <Home className="h-4 w-4" />
                 Tutup / Selesai
@@ -844,8 +836,8 @@ export default function RegistrationForm() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) { 
   return (
-    <div className="mt-8 border-t border-slate-100 pt-6">
-      <p className="mb-4 text-xs font-extrabold uppercase tracking-[0.16em] text-blue-royal">{title}</p>
+    <div className="mt-8 border-t border-[#E5E7EB] pt-6 first:mt-0 first:border-t-0 first:pt-0">
+      <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.14em] text-[#1B5DBF]">{title}</h2>
       {children}
     </div>
   ); 
@@ -868,7 +860,7 @@ function Field({ id, label, value, onChange, required, type = "text", inputMode,
   const isInvalid = Boolean(error);
   return (
     <div className="flex flex-col">
-      <label htmlFor={`field-${id}`} className={`text-xs font-bold transition-colors ${isInvalid ? "text-red-600 font-extrabold" : "text-slate-700"}`}>
+      <label htmlFor={`field-${id}`} className={`text-xs font-bold transition-colors ${isInvalid ? "text-red-600 font-extrabold" : "text-[#172554]"}`}>
         {label}
         {required && <span className="text-red-500 font-bold"> *</span>}
       </label>
@@ -883,7 +875,7 @@ function Field({ id, label, value, onChange, required, type = "text", inputMode,
         className={`mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm outline-none transition duration-150 ${
           isInvalid 
             ? "border-2 border-red-500 bg-red-50/50 text-red-950 ring-2 ring-red-200 placeholder-red-300 focus:border-red-600 focus:ring-red-300" 
-            : "border border-slate-200 bg-white text-navy-deep focus:border-blue-royal focus:ring-2 focus:ring-blue-100"
+            : "border border-[#E5E7EB] bg-white text-[#172554] placeholder:text-slate-400 focus:border-[#1B5DBF] focus:ring-2 focus:ring-[#1B5DBF]/15"
         }`} 
       />
       {error && (
@@ -916,7 +908,7 @@ function Select({
   const isInvalid = Boolean(error);
   return (
     <div className="flex flex-col">
-      <label htmlFor={`field-${id}`} className={`text-xs font-bold transition-colors ${isInvalid ? "text-red-600 font-extrabold" : "text-slate-700"}`}>
+      <label htmlFor={`field-${id}`} className={`text-xs font-bold transition-colors ${isInvalid ? "text-red-600 font-extrabold" : "text-[#172554]"}`}>
         {label}
         {required && <span className="text-red-500 font-bold"> *</span>}
       </label>
@@ -927,7 +919,7 @@ function Select({
         className={`mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-sm outline-none transition duration-150 ${
           isInvalid 
             ? "border-2 border-red-500 bg-red-50/50 text-red-950 ring-2 ring-red-200 focus:border-red-600 focus:ring-red-300" 
-            : "border border-slate-200 bg-white text-navy-deep focus:border-blue-royal focus:ring-2 focus:ring-blue-100"
+            : "border border-[#E5E7EB] bg-white text-[#172554] focus:border-[#1B5DBF] focus:ring-2 focus:ring-[#1B5DBF]/15"
         }`}
       >
         {children}
@@ -964,7 +956,7 @@ function TextArea({
   const isInvalid = Boolean(error);
   return (
     <div className="flex flex-col">
-      <label htmlFor={`field-${id}`} className={`text-xs font-bold transition-colors ${isInvalid ? "text-red-600 font-extrabold" : "text-slate-700"}`}>
+      <label htmlFor={`field-${id}`} className={`text-xs font-bold transition-colors ${isInvalid ? "text-red-600 font-extrabold" : "text-[#172554]"}`}>
         {label}
         {required && <span className="text-red-500 font-bold"> *</span>}
       </label>
@@ -977,7 +969,7 @@ function TextArea({
         className={`mt-1.5 w-full resize-y rounded-xl px-3.5 py-2.5 text-sm outline-none transition duration-150 ${
           isInvalid 
             ? "border-2 border-red-500 bg-red-50/50 text-red-950 ring-2 ring-red-200 placeholder-red-300 focus:border-red-600 focus:ring-red-300" 
-            : "border border-slate-200 bg-white text-navy-deep focus:border-blue-royal focus:ring-2 focus:ring-blue-100"
+            : "border border-[#E5E7EB] bg-white text-[#172554] placeholder:text-slate-400 focus:border-[#1B5DBF] focus:ring-2 focus:ring-[#1B5DBF]/15"
         }`} 
       />
       {error && (

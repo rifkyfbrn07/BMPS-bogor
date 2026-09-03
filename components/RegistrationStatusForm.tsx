@@ -52,36 +52,55 @@ export default function RegistrationStatusForm() {
   const presentation = result ? statusPresentation[result.status] ?? statusPresentation.PENDING : null;
 
   return (
-    <section className="soft-panel p-5 sm:p-8">
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-royal">Cek pendaftaran</p>
-      <h2 className="mt-3 text-2xl font-bold tracking-[-0.01em] text-navy-deep">Cek Status Pendaftaran</h2>
+    <section className="rounded-[20px] border border-[#E5E7EB] bg-white p-6 sm:p-8 lg:p-10 shadow-sm">
+      <span className="inline-flex items-center rounded-full border border-[#D0E1FD] bg-[#EAF2FF] px-3.5 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[#1B5DBF]">
+        CEK STATUS PENDAFTARAN
+      </span>
+      <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#0F1F4A]">Cek Status Pendaftaran</h2>
       <p className="mt-2 text-sm leading-6 text-slate-600">
         Pendaftaran tidak langsung menjadi anggota. Admin BMPS akan meninjau lalu menerima atau menolak permohonan.
       </p>
       <form onSubmit={submit} className="mt-6 grid gap-3 sm:grid-cols-2">
-        <input required value={registrationNumber} onChange={(e) => setRegistrationNumber(e.target.value)} placeholder="Nomor pendaftaran" aria-label="Nomor pendaftaran" className="rounded-xl border border-slate-200 px-3.5 py-3 outline-none transition focus:border-blue-royal" />
-        <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email pendaftar" aria-label="Email pendaftar" className="rounded-xl border border-slate-200 px-3.5 py-3 outline-none transition focus:border-blue-royal" />
-        <button className="sm:col-span-2 w-fit rounded-full bg-navy px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-royal">Cek status</button>
+        <input 
+          required 
+          value={registrationNumber} 
+          onChange={(e) => setRegistrationNumber(e.target.value)} 
+          placeholder="Nomor pendaftaran" 
+          aria-label="Nomor pendaftaran" 
+          className="rounded-xl border border-[#E5E7EB] px-3.5 py-3 text-sm text-[#172554] placeholder:text-slate-400 outline-none transition focus:border-[#1B5DBF] focus:ring-2 focus:ring-[#1B5DBF]/15" 
+        />
+        <input 
+          required 
+          type="email" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+          placeholder="Email pendaftar" 
+          aria-label="Email pendaftar" 
+          className="rounded-xl border border-[#E5E7EB] px-3.5 py-3 text-sm text-[#172554] placeholder:text-slate-400 outline-none transition focus:border-[#1B5DBF] focus:ring-2 focus:ring-[#1B5DBF]/15" 
+        />
+        <button className="sm:col-span-2 w-fit rounded-xl bg-[#0F1F4A] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1B2CC1]">
+          Cek Status
+        </button>
       </form>
-      {message && <p role="alert" className="mt-4 text-sm text-red-700">{message}</p>}
+      {message && <p role="alert" className="mt-4 text-sm font-semibold text-red-700">{message}</p>}
 
       {result && presentation && (
-        <div className="mt-8 border-t border-slate-100 pt-7">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">Status pendaftaran</p>
+        <div className="mt-8 border-t border-[#E5E7EB] pt-7">
+          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">Hasil Peninjauan</p>
           <div className="mt-3 flex items-center gap-3">
             <span aria-hidden="true" className={`h-2.5 w-2.5 shrink-0 rounded-full ring-4 ${presentation.dotClass}`} />
-            <h3 className="text-xl font-bold tracking-[-0.01em] text-navy-deep">{presentation.headline}</h3>
+            <h3 className="text-xl font-bold tracking-tight text-[#0F1F4A]">{presentation.headline}</h3>
           </div>
           <p className="mt-2 max-w-lg text-sm leading-6 text-slate-600">{presentation.supporting}</p>
 
           <dl className="mt-6 grid gap-4 sm:grid-cols-2">
             <div>
               <dt className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">Lembaga</dt>
-              <dd className="mt-1 text-sm font-semibold text-navy-deep">{result.name}</dd>
+              <dd className="mt-1 text-sm font-semibold text-[#0F1F4A]">{result.name}</dd>
             </div>
             <div>
               <dt className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">Nomor pendaftaran</dt>
-              <dd className="mt-1 font-mono text-sm font-semibold text-navy-deep">{result.registrationNumber}</dd>
+              <dd className="mt-1 font-mono text-sm font-semibold text-[#0F1F4A]">{result.registrationNumber}</dd>
             </div>
           </dl>
 

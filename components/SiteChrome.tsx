@@ -17,13 +17,15 @@ export default function SiteChrome({
 }) {
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith("/admin");
+  const isRegistrationPage = pathname === "/daftar-sekolah";
   const isAuthPage = pathname === "/login" || pathname === "/daftar" || isAdminPage;
+  const hideNavbar = isAuthPage || isRegistrationPage;
   const isHeroPage = pathname === "/";
   const isProfileHero = pathname === "/profile";
   return (
     <>
-      {!isAuthPage && <Navbar variant="solid" authenticated={authenticated} userName={userName} userEmail={userEmail} />}
-      {!isAuthPage && !isHeroPage && !isProfileHero && <div aria-hidden="true" className="h-[80px] lg:h-[92px]" />}
+      {!hideNavbar && <Navbar variant="solid" authenticated={authenticated} userName={userName} userEmail={userEmail} />}
+      {!hideNavbar && !isHeroPage && !isProfileHero && <div aria-hidden="true" className="h-[80px] lg:h-[92px]" />}
       <main key={pathname} className={`flex-1 ${isAdminPage ? "" : "page-fade-enter"}`}>{children}</main>
       {!isAuthPage && <Footer />}
     </>
