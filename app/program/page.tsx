@@ -119,7 +119,7 @@ export default function ProgramPage() {
 
       <section className="mt-14 sm:mt-16" aria-labelledby="bantuan-schools-heading">
         <div className="max-w-2xl">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">Program Bantuan Pendidikan</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-royal"></p>
           <h2 id="bantuan-schools-heading" className="mt-2 text-2xl font-bold tracking-tight text-navy-deep sm:text-3xl">
             Sekolah &amp; Yayasan yang Terdaftar
           </h2>
