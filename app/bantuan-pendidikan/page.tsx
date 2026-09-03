@@ -23,7 +23,7 @@ export default function BantuanPendidikanPage() {
   return (
     <div className="section-shell w-full max-w-full overflow-x-clip py-8 sm:py-16 lg:py-20">
       <SectionHeading
-        eyebrow="Program Bantuan Pendidikan"
+        eyebrow=""
         title="Sekolah & Yayasan Peserta Bantuan Pendidikan"
         description="Daftar sekolah dan yayasan terverifikasi BMPS Bogor yang mengikuti program Bantuan Pendidikan, diurutkan dari yang paling baru disetujui."
       />

@@ -23,7 +23,7 @@ export default function InfoBeasiswaPage() {
   return (
     <div className="section-shell w-full max-w-full overflow-x-clip py-8 sm:py-16 lg:py-20">
       <SectionHeading
-        eyebrow="Program Informasi Beasiswa"
+        eyebrow=""
         title="Sekolah & Yayasan Peserta Informasi Beasiswa"
         description="Daftar sekolah dan yayasan terverifikasi BMPS Bogor yang mengikuti program Informasi Beasiswa, diurutkan dari yang paling baru disetujui."
       />
