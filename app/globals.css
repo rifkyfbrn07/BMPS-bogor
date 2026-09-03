@@ -96,13 +96,13 @@ h6 {
     }
   }
 
-  /* Solid navbar terang: satu permukaan solid penuh membungkus Logo, Navigation, CTA & Login. */
+  /* Solid navbar terang: satu permukaan solid putih penuh membungkus Logo, Navigation, CTA & Login. */
   .glass-navbar {
     width: 100%;
     box-sizing: border-box;
     pointer-events: auto;
 
-    background-color: #ffffff !important;
+    background-color: #FFFFFF !important;
     background: #FFFFFF !important;
     border: 1px solid #EAEAEA;
     box-shadow:
@@ -118,16 +118,6 @@ h6 {
     box-shadow:
       0 4px 10px rgba(15, 35, 80, 0.08),
       0 16px 36px rgba(15, 35, 80, 0.10);
-  }
-
-  /* Varian gelap: solid opaque background */
-  .glass-navbar-dark {
-    background-color: #091836 !important;
-    background: #091836 !important;
-    border-color: #091836;
-    box-shadow:
-      0 4px 12px rgba(2, 8, 23, 0.25),
-      0 16px 40px -12px rgba(2, 8, 23, 0.45);
   }
 
   /* Solid mobile menu panel: strictly opaque white */
@@ -173,17 +163,6 @@ h6 {
   margin-left: -1.5px;
   border-radius: 9999px;
   background: #174EA6;
-  pointer-events: none; /* dekorasi tidak boleh menangkap klik link */
-}
-
-.nav-pill-active-dark {
-  color: #ffffff;
-  background: #142852;
-  box-shadow: inset 0 0 0 1px #1E3A75;
-}
-
-.nav-pill-active-dark::after {
-  background: #ffffff;
   pointer-events: none; /* dekorasi tidak boleh menangkap klik link */
 }
 

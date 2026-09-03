@@ -34,7 +34,7 @@ type NavbarProps = {
   userEmail?: string;
 };
 
-export default function Navbar({ variant = "solid", authenticated = false, userName, userEmail }: NavbarProps) {
+export default function Navbar({ authenticated = false, userName, userEmail }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -76,10 +76,6 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const activeStates = navLinks.map((link) => isActive(link.href));
 
-  // Di atas hero image navbar memakai varian gelap jika belum digulir dan menu tertutup.
-  // Saat menu mobile terbuka, navbar selalu solid putih agar kontras dan terbaca jelas.
-  const dark = variant === "hero" && !scrolled && !menuOpen;
-
   async function logout() {
     setProfileOpen(false);
     setMenuOpen(false);
@@ -94,7 +90,7 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
       <div
         className={cn(
           "glass-navbar pointer-events-auto flex min-h-[58px] w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2 transition-[background-color,border-color,box-shadow] duration-200 ease-out sm:min-h-[64px] sm:px-5 sm:py-2.5",
-          dark ? "glass-navbar-dark" : cn("glass-navbar", scrolled && "glass-navbar-scrolled")
+          scrolled && "glass-navbar-scrolled"
         )}
       >
         {/* 1. Logo (flex-shrink: 0) */}
@@ -103,9 +99,9 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
             <span className="flex h-9 w-9 items-center justify-center sm:h-10 sm:w-10">
               <Image src="/logo.png" alt="Logo BMPS" width={40} height={40} className="h-full w-full object-contain" priority unoptimized />
             </span>
-            <span className={cn("leading-none transition-colors duration-300", dark ? "text-white" : "text-[#172033]")}>
+            <span className="leading-none text-[#172033]">
               <span className="font-display block text-[0.82rem] font-bold tracking-[0.12em] sm:text-[0.88rem]">BMPS</span>
-              <span className={cn("mt-1 block text-[0.54rem] font-semibold uppercase tracking-[0.22em] sm:text-[0.6rem]", dark ? "text-slate-300" : "text-slate-500")}>Bogor</span>
+              <span className="mt-1 block text-[0.54rem] font-semibold uppercase tracking-[0.22em] text-slate-500 sm:text-[0.6rem]">Bogor</span>
             </span>
           </Link>
         </div>
@@ -121,10 +117,7 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
                   {showTierDivider && (
                     <span
                       aria-hidden="true"
-                      className={cn(
-                        "mx-1.5 h-3.5 w-px transition-colors duration-300 2xl:mx-2.5",
-                        dark ? "bg-slate-700" : "bg-slate-200"
-                      )}
+                      className="mx-1.5 h-3.5 w-px bg-slate-200 transition-colors duration-300 2xl:mx-2.5"
                     />
                   )}
                   <Link
@@ -137,12 +130,8 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
                         ? "font-semibold tracking-[-0.01em]"
                         : "font-medium tracking-[0.01em]",
                       active
-                        ? dark
-                          ? "nav-pill-active-dark"
-                          : "nav-pill-active"
-                        : dark
-                          ? "text-slate-200 hover:bg-[#142852] hover:text-white"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-[#172033]"
+                        ? "nav-pill-active"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-[#172033]"
                     )}
                   >
                     {link.label}
@@ -157,12 +146,7 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
         <div className="navbar-actions hidden shrink-0 items-center gap-2 xl:flex 2xl:gap-3">
           <Link
             href="/daftar-sekolah"
-            className={cn(
-              "btn-editorial font-display inline-flex h-[38px] items-center justify-center whitespace-nowrap rounded-xl px-3.5 text-[11.5px] font-semibold shadow-sm transition-all duration-250 ease-out hover:-translate-y-0.5 2xl:h-[40px] 2xl:px-4 2xl:text-[12px]",
-              dark
-                ? "bg-white text-[#172033] shadow-md hover:bg-slate-100"
-                : "bg-[#172033] text-white shadow-sm hover:bg-[#0f172a]"
-            )}
+            className="btn-editorial font-display inline-flex h-[38px] items-center justify-center whitespace-nowrap rounded-xl bg-[#172033] px-3.5 text-[11.5px] font-semibold text-white shadow-sm transition-all duration-250 ease-out hover:-translate-y-0.5 hover:bg-[#0f172a] 2xl:h-[40px] 2xl:px-4 2xl:text-[12px]"
           >
             Masukan Data Sekolah/Yayasan ke BMPS
           </Link>
@@ -187,10 +171,7 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           onClick={() => setMenuOpen((current) => !current)}
-          className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-xl border transition xl:hidden",
-            dark ? "border-slate-700 text-white hover:bg-[#142852]" : "border-slate-200 bg-slate-50 text-[#172033] hover:bg-slate-100"
-          )}
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-[#172033] transition hover:bg-slate-100 xl:hidden"
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
