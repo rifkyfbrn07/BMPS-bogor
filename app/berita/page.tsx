@@ -61,7 +61,7 @@ export default function BeritaPage() {
   return (
     <div className="section-shell py-12 sm:py-16 lg:py-20">
       <SectionHeading
-        eyebrow="Berita & Kegiatan"
+        eyebrow=""
         title="Informasi terbaru BMPS Bogor"
         description="Kumpulan berita, kegiatan, dan perkembangan pendidikan swasta di wilayah Bogor."
       />
@@ -124,7 +124,7 @@ export default function BeritaPage() {
 
       <section className="mt-14 sm:mt-16" aria-labelledby="beasiswa-schools-heading">
         <div className="max-w-2xl">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">Program Beasiswa</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-royal"></p>
           <h2 id="beasiswa-schools-heading" className="mt-2 text-2xl font-bold tracking-tight text-navy-deep sm:text-3xl">
             Sekolah &amp; Yayasan yang Terdaftar
           </h2>
