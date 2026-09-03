@@ -92,7 +92,7 @@ export default function VisiMisiSection({ misiItems }: { misiItems: MisiItem[] }
       <div className="section-shell">
         <div data-visi="heading" className="text-center max-w-2xl mx-auto space-y-4">
           <span className="font-ui text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">
-            Landasan Utama
+            
           </span>
           <h2 className="font-display text-3xl font-extrabold tracking-tight text-navy-deep sm:text-4xl">
             Visi &amp; Misi Organisasi
@@ -109,7 +109,7 @@ export default function VisiMisiSection({ misiItems }: { misiItems: MisiItem[] }
               Visi
             </p>
             <blockquote className="mt-6 font-display text-[1.65rem] font-bold leading-[1.32] tracking-[-0.01em] text-navy-deep sm:text-4xl sm:leading-[1.28]">
-              &ldquo;Membangun pendidikan swasta yang unggul, relevan, dan berdaya saing.&rdquo;
+              Membangun pendidikan swasta yang unggul, relevan, dan berdaya saing.
             </blockquote>
             <div className="mt-8 h-px w-16 bg-blue-royal/40" aria-hidden="true" />
             <p className="mt-6 max-w-sm text-sm leading-7 text-slate-500">

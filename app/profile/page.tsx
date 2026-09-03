@@ -133,7 +133,7 @@ export default function ProfilePage() {
         
         <div className="section-shell relative z-10 text-center text-white animate-fade-in-up">
           <span className="font-ui text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-blue-400">
-            Mengenal Organisasi Kami
+            
           </span>
           <h1 className="font-display mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
             Tentang BMPS Bogor
@@ -151,7 +151,7 @@ export default function ProfilePage() {
           {/* Left Text content */}
           <div className="lg:col-span-7 space-y-6">
             <span className="font-ui text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">
-              Sekilas Tentang Kami
+              
             </span>
             <h2 className="font-display text-3xl font-extrabold tracking-tight text-navy-deep sm:text-4xl">
               Wadah Kolaborasi Pendidikan Swasta Terpadu di Bogor
@@ -227,7 +227,7 @@ export default function ProfilePage() {
       <section className="section-shell py-16 sm:py-20 lg:py-24">
         <div className="text-center max-w-2xl mx-auto space-y-4">
           <span className="font-ui text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">
-            Prinsip Kerja
+            
           </span>
           <h2 className="font-display text-3xl font-extrabold tracking-tight text-navy-deep sm:text-4xl">
             Nilai-Nilai Utama
@@ -267,7 +267,7 @@ export default function ProfilePage() {
         <div className="section-shell">
           <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
             <span className="font-ui text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">
-              Sejarah Singkat
+              
             </span>
             <h2 className="font-display text-3xl font-extrabold tracking-tight text-navy-deep sm:text-4xl">
               Perjalanan BMPS Bogor
@@ -312,7 +312,7 @@ export default function ProfilePage() {
       <section className="section-shell py-16 sm:py-20 lg:py-24">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
           <span className="font-ui text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">
-            Fokus Aktivitas
+            
           </span>
           <h2 className="font-display text-3xl font-extrabold tracking-tight text-navy-deep sm:text-4xl">
             Kontribusi & Program Utama
@@ -368,7 +368,7 @@ export default function ProfilePage() {
         <div className="section-shell">
           <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
             <span className="font-ui text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">
-              Dokumentasi
+              
             </span>
             <h2 className="font-display text-3xl font-extrabold tracking-tight text-navy-deep sm:text-4xl">
               Aktivitas BMPS Bogor
@@ -400,7 +400,7 @@ export default function ProfilePage() {
       <section id="pengurus" className="section-shell py-16 sm:py-20 lg:py-24">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
           <span className="font-ui text-xs font-bold uppercase tracking-[0.16em] text-blue-royal">
-            Struktur Organisasi
+            
           </span>
           <h2 className="font-display text-3xl font-extrabold tracking-tight text-navy-deep sm:text-4xl">
             Struktur Pengurus
