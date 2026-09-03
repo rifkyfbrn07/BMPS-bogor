@@ -35,7 +35,7 @@ export const news: NewsItem[] = [
     category: "Beasiswa",
     date: "2026-07-05",
     image:
-      "/news/news1.png",
+      "/news1.png",
     excerpt:
       "BMPS Bogor menyalurkan bantuan beasiswa pendidikan tahap pertama kepada 150 siswa dari sekolah anggota.",
     content:
