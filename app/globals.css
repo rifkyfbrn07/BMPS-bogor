@@ -69,14 +69,14 @@ h6 {
     scroll-snap-type: x proximity;
   }
 
-  /* Shell navbar: FLOATING + FIXED di viewport dengan lebar penuh hingga max-width 1450px */
+  /* Shell navbar: FLOATING + FIXED di viewport dengan lebar penuh hingga max-width 1520px */
   .navbar-shell {
     position: fixed;
     top: 12px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 24px);
-    max-width: 1450px;
+    max-width: 1520px;
     z-index: 100;
     pointer-events: none;
     box-sizing: border-box;
@@ -91,8 +91,8 @@ h6 {
 
   @media (min-width: 1280px) {
     .navbar-shell {
-      top: 20px;
-      width: calc(100% - 40px);
+      top: 18px;
+      width: calc(100% - 32px);
     }
   }
 

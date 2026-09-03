@@ -91,14 +91,14 @@ export default function Navbar({ authenticated = false, userName, userEmail }: N
     <header className="navbar-shell">
       <div
         className={cn(
-          "glass-navbar pointer-events-auto flex min-h-[58px] w-full items-center justify-between gap-3 rounded-2xl bg-white px-3.5 py-2 transition-[border-color,box-shadow] duration-200 ease-out sm:min-h-[64px] sm:px-5 sm:py-2.5",
+          "glass-navbar pointer-events-auto flex min-h-[58px] w-full items-center justify-between rounded-2xl bg-white px-3.5 py-2 transition-[border-color,box-shadow] duration-200 ease-out sm:min-h-[62px] sm:px-4 sm:py-2 2xl:px-5",
           scrolled && "glass-navbar-scrolled"
         )}
       >
-        {/* 1. Logo (flex-shrink: 0) */}
-        <div className="navbar-logo flex shrink-0 items-center">
-          <Link href="/" className="flex items-center gap-2.5" aria-label="BMPS Bogor, Beranda">
-            <span className="flex h-9 w-9 items-center justify-center sm:h-10 sm:w-10">
+        {/* 1. Logo (flex-shrink: 0, guaranteed separation) */}
+        <div className="navbar-logo flex shrink-0 items-center mr-2 xl:mr-3 2xl:mr-4">
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5" aria-label="BMPS Bogor, Beranda">
+            <span className="flex h-9 w-9 items-center justify-center sm:h-10 sm:w-10 shrink-0">
               <Image src="/logo.png" alt="Logo BMPS" width={40} height={40} className="h-full w-full object-contain" priority unoptimized />
             </span>
             <span className="leading-none text-[#111827]">
@@ -108,9 +108,9 @@ export default function Navbar({ authenticated = false, userName, userEmail }: N
           </Link>
         </div>
 
-        {/* 2. Navigation Links (flex: 1, centered) */}
-        <nav className="navbar-links hidden flex-1 items-center justify-center min-w-0 px-2 xl:flex" aria-label="Navigasi utama">
-          <div className="flex items-center gap-0.5 2xl:gap-1">
+        {/* 2. Navigation Links (hidden <1280px, centered on xl+, no overlap) */}
+        <nav className="navbar-links hidden min-w-0 items-center justify-center xl:flex xl:flex-1" aria-label="Navigasi utama">
+          <div className="flex items-center gap-0.5 2xl:gap-1.5">
             {navLinks.map((link, index) => {
               const active = activeStates[index];
               const showTierDivider = index > 0 && link.tier === "secondary" && navLinks[index - 1].tier === "primary";
@@ -119,15 +119,15 @@ export default function Navbar({ authenticated = false, userName, userEmail }: N
                   {showTierDivider && (
                     <span
                       aria-hidden="true"
-                      className="mx-1.5 h-3.5 w-px bg-slate-200 transition-colors duration-300 2xl:mx-2.5"
+                      className="mx-1 h-3.5 w-px bg-slate-200 2xl:mx-2"
                     />
                   )}
                   <Link
                     href={link.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "nav-pill relative whitespace-nowrap transition-all duration-200 ease-out hover:scale-[1.02]",
-                      "px-2.5 py-1.5 text-[12px] 2xl:px-3.5 2xl:text-[13px]",
+                      "nav-pill relative whitespace-nowrap transition-all duration-150 ease-out",
+                      "px-2 py-1.5 text-[11.5px] 2xl:px-3 2xl:text-[13px]",
                       link.tier === "primary"
                         ? "font-semibold tracking-[-0.01em]"
                         : "font-medium tracking-[0.01em]",
@@ -144,11 +144,11 @@ export default function Navbar({ authenticated = false, userName, userEmail }: N
           </div>
         </nav>
 
-        {/* 3. Actions: CTA & Login (flex-shrink: 0) */}
-        <div className="navbar-actions hidden shrink-0 items-center gap-2 xl:flex 2xl:gap-3">
+        {/* 3. Actions: CTA & Login (flex-shrink: 0, guaranteed separation) */}
+        <div className="navbar-actions hidden shrink-0 items-center gap-2 ml-2 xl:ml-3 xl:flex 2xl:gap-2.5">
           <Link
             href="/daftar-sekolah"
-            className="btn-editorial font-display inline-flex h-[38px] items-center justify-center whitespace-nowrap rounded-xl bg-[#111827] px-3.5 text-[11.5px] font-semibold text-white shadow-sm transition-all duration-250 ease-out hover:-translate-y-0.5 hover:bg-[#1f2937] 2xl:h-[40px] 2xl:px-4 2xl:text-[12px]"
+            className="btn-editorial font-display inline-flex h-[36px] items-center justify-center whitespace-nowrap rounded-xl bg-[#111827] px-3 text-[11px] font-semibold text-white shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-[#1f2937] 2xl:h-[38px] 2xl:px-3.5 2xl:text-[12px]"
           >
             Masukan Data Sekolah/Yayasan ke BMPS
           </Link>
@@ -244,7 +244,7 @@ function LoginLink({ mobile = false, onClick }: { mobile?: boolean; onClick?: ()
       onClick={onClick}
       className={cn(
         "btn-editorial font-display inline-flex items-center justify-center whitespace-nowrap rounded-xl bg-[#111827] font-semibold text-white transition-colors hover:bg-[#1f2937]",
-        mobile ? "px-4 py-3 text-sm" : "h-[38px] px-3.5 text-[11.5px] 2xl:h-[40px] 2xl:px-4 2xl:text-[12px]"
+        mobile ? "px-4 py-3 text-sm" : "h-[36px] px-3 text-[11px] 2xl:h-[38px] 2xl:px-3.5 2xl:text-[12px]"
       )}
     >
       Login
@@ -262,18 +262,31 @@ const ProfileControl = forwardRef<HTMLDivElement, ProfileControlProps>(({ open, 
       aria-expanded={open}
       onClick={onToggle}
       className={cn(
-        "font-display inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white font-semibold text-[#111827] transition-colors hover:border-[#1B2CC1] hover:text-[#1B2CC1]",
-        mobile ? "w-full justify-center px-4 py-3 text-sm" : "h-[38px] px-3 text-[11.5px] 2xl:h-[40px] 2xl:text-[12px]"
+        "font-display inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white font-semibold text-[#111827] transition-colors hover:border-[#1B2CC1] hover:text-[#1B2CC1]",
+        mobile ? "w-full justify-center px-4 py-3 text-sm" : "h-[36px] px-2.5 text-[11px] 2xl:h-[38px] 2xl:px-3 2xl:text-[12px]"
       )}
     > 
-      <UserRound className="h-4 w-4" aria-hidden="true" /><span className="max-w-[9rem] truncate">{userName ?? "Profile"}</span><ChevronDown className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")} aria-hidden="true" />
+      <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
+      <span className="max-w-[7rem] 2xl:max-w-[9rem] truncate">{userName ?? "Profile"}</span>
+      <ChevronDown className={cn("h-3 w-3 transition-transform", open && "rotate-180")} aria-hidden="true" />
     </button>
-    {open && <div role="menu" className={cn("absolute right-0 z-50 mt-2 w-64 rounded-lg border border-slate-200 bg-white p-2 text-slate-800 shadow-[0_12px_28px_rgba(15,35,80,0.12)]", mobile && "left-0 right-0 w-full")}> 
-      <div className="border-b border-slate-100 px-3 py-2.5"><p className="truncate text-sm font-semibold text-[#111827]">{userName ?? "User"}</p><p className="truncate text-xs text-slate-500">{userEmail ?? "Akun BMPS Bogor"}</p></div>
-      <Link href="/dashboard" role="menuitem" onClick={onToggle} className="font-ui mt-1 flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition hover:bg-[var(--brand-primary-soft)] hover:text-[#1B2CC1]"><LayoutDashboard className="h-4 w-4" aria-hidden="true" /> Dashboard</Link>
-      <Link href="/profile/akun" role="menuitem" onClick={onToggle} className="font-ui flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition hover:bg-[var(--brand-primary-soft)] hover:text-[#1B2CC1]"><UserRound className="h-4 w-4" aria-hidden="true" /> Profil Saya</Link>
-      <button type="button" role="menuitem" onClick={onLogout} className="flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm text-red-700 transition hover:bg-red-50"><LogOut className="h-4 w-4" aria-hidden="true" /> Keluar</button>
-    </div>}
+    {open && (
+      <div role="menu" className={cn("absolute right-0 z-50 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-2 text-slate-800 shadow-[0_12px_28px_rgba(15,35,80,0.12)]", mobile && "left-0 right-0 w-full")}> 
+        <div className="border-b border-slate-100 px-3 py-2.5">
+          <p className="truncate text-sm font-semibold text-[#111827]">{userName ?? "User"}</p>
+          <p className="truncate text-xs text-slate-500">{userEmail ?? "Akun BMPS Bogor"}</p>
+        </div>
+        <Link href="/dashboard" role="menuitem" onClick={onToggle} className="font-ui mt-1 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition hover:bg-[var(--brand-primary-soft)] hover:text-[#1B2CC1]">
+          <LayoutDashboard className="h-4 w-4" aria-hidden="true" /> Dashboard
+        </Link>
+        <Link href="/profile/akun" role="menuitem" onClick={onToggle} className="font-ui flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition hover:bg-[var(--brand-primary-soft)] hover:text-[#1B2CC1]">
+          <UserRound className="h-4 w-4" aria-hidden="true" /> Profil Saya
+        </Link>
+        <button type="button" role="menuitem" onClick={onLogout} className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-red-700 transition hover:bg-red-50">
+          <LogOut className="h-4 w-4" aria-hidden="true" /> Keluar
+        </button>
+      </div>
+    )}
   </div>
 ));
 
