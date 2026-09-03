@@ -22,7 +22,7 @@ export default function SiteChrome({
   const isProfileHero = pathname === "/profile";
   return (
     <>
-      {!isAuthPage && <Navbar variant={isHeroPage || isProfileHero ? "hero" : "solid"} authenticated={authenticated} userName={userName} userEmail={userEmail} />}
+      {!isAuthPage && <Navbar variant="solid" authenticated={authenticated} userName={userName} userEmail={userEmail} />}
       {!isAuthPage && !isHeroPage && !isProfileHero && <div aria-hidden="true" className="h-[80px] lg:h-[92px]" />}
       <main key={pathname} className={`flex-1 ${isAdminPage ? "" : "page-fade-enter"}`}>{children}</main>
       {!isAuthPage && <Footer />}

@@ -34,7 +34,7 @@ type NavbarProps = {
   userEmail?: string;
 };
 
-export default function Navbar({ variant = "solid", authenticated = false, userName, userEmail }: NavbarProps) {
+export default function Navbar({ authenticated = false, userName, userEmail }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -76,10 +76,6 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const activeStates = navLinks.map((link) => isActive(link.href));
 
-  // Di atas hero image navbar memakai varian glass gelap; setelah digulir,
-  // permukaannya berubah menjadi glass terang agar tetap terbaca.
-  const dark = variant === "hero" && !scrolled;
-
   async function logout() {
     setProfileOpen(false);
     setMenuOpen(false);
@@ -88,15 +84,13 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
     router.refresh();
   }
 
-  // Shell fixed: mengikuti viewport (bukan sticky) — tidak ikut scroll, mengambang
-  // di atas konten, dan tidak menangkap klik. Pointer-events hanya aktif pada
-  // bar & drawer glass, bukan pada shell/dekorasi.
+  // Shell fixed: mengikuti viewport — tidak ikut scroll, mengambang di atas konten.
   return (
     <header className="navbar-shell">
       <div
         className={cn(
-          "glass-navbar pointer-events-auto flex min-h-[58px] w-full items-center justify-between gap-3 rounded-[22px] px-3.5 py-2 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out sm:min-h-[64px] sm:px-5 sm:py-2.5",
-          dark ? "glass-navbar-dark" : cn("glass-navbar", scrolled && "glass-navbar-scrolled")
+          "glass-navbar pointer-events-auto flex min-h-[58px] w-full items-center justify-between gap-3 rounded-2xl bg-white px-3.5 py-2 transition-[border-color,box-shadow] duration-200 ease-out sm:min-h-[64px] sm:px-5 sm:py-2.5",
+          scrolled && "glass-navbar-scrolled"
         )}
       >
         {/* 1. Logo (flex-shrink: 0) */}
@@ -105,14 +99,14 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
             <span className="flex h-9 w-9 items-center justify-center sm:h-10 sm:w-10">
               <Image src="/logo.png" alt="Logo BMPS" width={40} height={40} className="h-full w-full object-contain" priority unoptimized />
             </span>
-            <span className={cn("leading-none transition-colors duration-300", dark ? "text-white" : "text-[#172033]")}>
+            <span className="leading-none text-[#172033]">
               <span className="font-display block text-[0.82rem] font-bold tracking-[0.12em] sm:text-[0.88rem]">BMPS</span>
-              <span className={cn("mt-1 block text-[0.54rem] font-semibold uppercase tracking-[0.22em] sm:text-[0.6rem]", dark ? "text-white/70" : "text-slate-500")}>Bogor</span>
+              <span className="mt-1 block text-[0.54rem] font-semibold uppercase tracking-[0.22em] text-slate-500 sm:text-[0.6rem]">Bogor</span>
             </span>
           </Link>
         </div>
 
-        {/* 2. Navigation Links (flex: 1, centered, inside Liquid Glass) */}
+        {/* 2. Navigation Links (flex: 1, centered) */}
         <nav className="navbar-links hidden flex-1 items-center justify-center min-w-0 px-2 xl:flex" aria-label="Navigasi utama">
           <div className="flex items-center gap-0.5 2xl:gap-1">
             {navLinks.map((link, index) => {
@@ -123,28 +117,21 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
                   {showTierDivider && (
                     <span
                       aria-hidden="true"
-                      className={cn(
-                        "mx-1.5 h-3.5 w-px transition-colors duration-300 2xl:mx-2.5",
-                        dark ? "bg-white/20" : "bg-slate-300/80"
-                      )}
+                      className="mx-1.5 h-3.5 w-px bg-slate-200 transition-colors duration-300 2xl:mx-2.5"
                     />
                   )}
                   <Link
                     href={link.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "nav-pill relative whitespace-nowrap transition-all duration-250 ease-out hover:scale-[1.02]",
+                      "nav-pill relative whitespace-nowrap transition-all duration-200 ease-out hover:scale-[1.02]",
                       "px-2.5 py-1.5 text-[12px] 2xl:px-3.5 2xl:text-[13px]",
                       link.tier === "primary"
                         ? "font-semibold tracking-[-0.01em]"
                         : "font-medium tracking-[0.01em]",
                       active
-                        ? dark
-                          ? "nav-pill-active-dark"
-                          : "nav-pill-active"
-                        : dark
-                          ? "text-white/80 hover:bg-white/12 hover:text-white"
-                          : "text-slate-600 hover:bg-slate-900/5 hover:text-[#172033]"
+                        ? "nav-pill-active font-semibold"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-[#172033]"
                     )}
                   >
                     {link.label}
@@ -155,16 +142,11 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
           </div>
         </nav>
 
-        {/* 3. Actions: CTA & Login (flex-shrink: 0, inside Liquid Glass) */}
+        {/* 3. Actions: CTA & Login (flex-shrink: 0) */}
         <div className="navbar-actions hidden shrink-0 items-center gap-2 xl:flex 2xl:gap-3">
           <Link
             href="/daftar-sekolah"
-            className={cn(
-              "btn-editorial font-display inline-flex h-[38px] items-center justify-center whitespace-nowrap rounded-xl px-3.5 text-[11.5px] font-semibold shadow-sm transition-all duration-250 ease-out hover:-translate-y-0.5 2xl:h-[40px] 2xl:px-4 2xl:text-[12px]",
-              dark
-                ? "bg-white text-[#172033] shadow-[0_10px_24px_-10px_rgba(2,8,23,0.55)] hover:bg-slate-100 hover:shadow-[0_14px_28px_-10px_rgba(2,8,23,0.65)]"
-                : "bg-[#172033] text-white shadow-[0_10px_22px_-10px_rgba(11,31,77,0.5)] hover:bg-[#0f172a] hover:shadow-[0_14px_26px_-10px_rgba(11,31,77,0.6)]"
-            )}
+            className="btn-editorial font-display inline-flex h-[38px] items-center justify-center whitespace-nowrap rounded-xl bg-[#172033] px-3.5 text-[11.5px] font-semibold text-white shadow-sm transition-all duration-250 ease-out hover:-translate-y-0.5 hover:bg-[#0f172a] 2xl:h-[40px] 2xl:px-4 2xl:text-[12px]"
           >
             Masukan Data Sekolah/Yayasan ke BMPS
           </Link>
@@ -189,25 +171,22 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           onClick={() => setMenuOpen((current) => !current)}
-          className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-xl ring-1 transition xl:hidden",
-            dark ? "text-white ring-white/30 hover:bg-white/10" : "text-[#172033] ring-slate-200 hover:bg-white/70"
-          )}
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-[#172033] transition hover:bg-slate-100 xl:hidden"
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
-      {/* Drawer mobile/tablet (<1280px) — panel glass di bawah bar. */}
+      {/* Drawer mobile/tablet (<1280px) — Solid Opaque White Panel */}
       <div
         id="mobile-menu"
         className={cn(
-          "glass-navbar pointer-events-auto overflow-hidden rounded-[22px] p-2.5 transition-[max-height,opacity,margin-top,visibility] duration-300 ease-out xl:hidden",
-          menuOpen ? "visible mt-2 max-h-[36rem] opacity-100" : "invisible max-h-0 opacity-0"
+          "mobile-menu-panel pointer-events-auto overflow-y-auto max-h-[calc(100dvh-5.5rem)] rounded-2xl p-4 bg-white transition-all duration-200 ease-out xl:hidden",
+          menuOpen ? "visible mt-2.5 opacity-100 shadow-2xl" : "invisible max-h-0 opacity-0 pointer-events-none p-0 border-0"
         )}
       >
         <nav aria-label="Navigasi seluler">
-          <div className="grid gap-0.5">
+          <div className="grid gap-1">
             {navLinks.map((link, index) => {
               const active = activeStates[index];
               return (
@@ -217,21 +196,39 @@ export default function Navbar({ variant = "solid", authenticated = false, userN
                   aria-current={active ? "page" : undefined}
                   onClick={() => setMenuOpen(false)}
                   className={cn(
-                    "nav-pill flex items-center justify-between px-3.5 py-2.5",
+                    "flex items-center justify-between px-4 py-3 rounded-xl transition-colors",
                     link.tier === "primary" ? "text-sm font-semibold tracking-[-0.01em]" : "text-[13px] font-medium",
-                    active ? "nav-pill-active" : "text-slate-600 hover:bg-white/70 hover:text-[#172033]"
+                    active ? "bg-[#EAF2FF] text-[#1B2CC1] font-semibold shadow-inner" : "text-slate-700 hover:bg-slate-100 hover:text-[#172033]"
                   )}
                 >
                   {link.label}
-                  {active && <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--brand-primary)]" />}
+                  {active && <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[#1B2CC1]" />}
                 </Link>
               );
             })}
           </div>
         </nav>
-        <div className="mt-2 grid gap-2 border-t border-slate-200/70 pt-3">
-          <Link href="/daftar-sekolah" onClick={() => setMenuOpen(false)} className="font-display rounded-xl bg-[#172033] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#0f172a]">Masukan Data Sekolah/Yayasan ke BMPS</Link>
-          {authenticated ? <ProfileControl ref={profileRef} open={profileOpen} onToggle={() => setProfileOpen((current) => !current)} onLogout={logout} userName={userName} userEmail={userEmail} mobile /> : <LoginLink mobile onClick={() => setMenuOpen(false)} />}
+        <div className="mt-3 grid gap-2.5 border-t border-slate-200 pt-3">
+          <Link
+            href="/daftar-sekolah"
+            onClick={() => setMenuOpen(false)}
+            className="font-display rounded-xl bg-[#172033] px-4 py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0f172a]"
+          >
+            Masukan Data Sekolah/Yayasan ke BMPS
+          </Link>
+          {authenticated ? (
+            <ProfileControl
+              ref={profileRef}
+              open={profileOpen}
+              onToggle={() => setProfileOpen((current) => !current)}
+              onLogout={logout}
+              userName={userName}
+              userEmail={userEmail}
+              mobile
+            />
+          ) : (
+            <LoginLink mobile onClick={() => setMenuOpen(false)} />
+          )}
         </div>
       </div>
     </header>
